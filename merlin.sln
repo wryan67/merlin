@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "merlin", "merlin.vcxproj", "{C921A039-BB97-4476-AF56-A70377B33B70}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|ARM64 = Debug|ARM64
+		Release|ARM = Release|ARM
+		Release|ARM64 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Debug|ARM.ActiveCfg = Debug|ARM
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Debug|ARM.Build.0 = Debug|ARM
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Debug|ARM.Deploy.0 = Debug|ARM
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Debug|ARM64.Build.0 = Debug|ARM64
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Debug|ARM64.Deploy.0 = Debug|ARM64
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Release|ARM.ActiveCfg = Release|ARM
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Release|ARM.Build.0 = Release|ARM
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Release|ARM.Deploy.0 = Release|ARM
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Release|ARM64.ActiveCfg = Release|ARM64
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Release|ARM64.Build.0 = Release|ARM64
+		{C921A039-BB97-4476-AF56-A70377B33B70}.Release|ARM64.Deploy.0 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {00B5B014-F60C-4E9A-9D02-E24C78B8C4A8}
+	EndGlobalSection
+EndGlobal
