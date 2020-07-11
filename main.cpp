@@ -264,6 +264,7 @@ void playTone(snd_pcm_t* soundCardHandle, float freq) {
 void* buttonTone(void* args) {
     int button = *((int*)args);
     snd_pcm_t* soundCardHandle=keypadSoundHandle[button];
+    free(args);
 
     if (button < maxNotes) {
         sendHeader(soundCardHandle);
