@@ -23,6 +23,7 @@ namespace Games {
         virtual ~Game() {}
 
         void restartGame();
+        void initPixels();
 
         bool isActive;
 

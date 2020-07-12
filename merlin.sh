@@ -24,7 +24,7 @@ SAME_GAME="${MCP23017_ADDRESS}_B_6"
 HIT_ME="${MCP23017_ADDRESS}_A_7"
 COMP_TURN="${MCP23017_ADDRESS}_B_0"
 
-ps -ef | awk '{if (/merlin.out/ && !/awk/) system(sprintf("sudo kill %d"))}'
+ps -ef | awk '{if (/merlin.out/ && !/awk/) system(sprintf("sudo kill %d",$2))}'
 
 sudo chown root $HOME/projects/merlin/bin/ARM/Debug/merlin.out
 sudo chmod u+s $HOME/projects/merlin/bin/ARM/Debug/merlin.out

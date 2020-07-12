@@ -217,13 +217,14 @@ int main(int argc, char** argv) {
     for (int i = 0; i < MERLIN_LIGHTS; ++i) {
         game.setPixelColor(i, OFF); 
     }
-    game.restartGame();
 
+    game.initPixels();
+    game.restartGame();
 
     while (true)
 	{
         fflush(stdout);
-		delay(25);
+		delay(250);
 	}
     
     neopixel_close();

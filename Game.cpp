@@ -110,6 +110,20 @@ namespace Games {
         randomizeBoard();
     }
 
+    void Game::initPixels() {
+        for (int c=0;c<256;++c) {
+            for (int i = 0; i <= 10; ++i) {
+                pixelColor[pixelMap[i]] = neopixel_wheel(c);
+            }
+            usleep(10 * 1000);
+            render();
+        }
+        for (int i = 0; i <= 10; ++i) {
+            pixelColor[pixelMap[i]] = 0;
+        }
+    }
+
+
     void Game::swapKey(int i) {
         //vector<int> todo;
 
@@ -148,8 +162,7 @@ namespace Games {
         if (pixelState[i] == 1) {
             pixelState[i] = 0;
             pixelColor[pixelMap[i]] = neopixel_wheel(BLUE);
-        }
-        else {
+        } else {
             pixelState[i] = 1;
             pixelColor[pixelMap[i]] = neopixel_wheel(GREEN);
         }
