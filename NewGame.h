@@ -7,8 +7,10 @@ namespace Games {
     public:
         NewGame();
 
+        void resetGameBoard();
+
         void restartGame();
-        void keypadPressed(int button);
+        void keypadButtonReleased(int button);
     };
 
 }

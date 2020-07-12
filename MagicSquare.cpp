@@ -25,7 +25,7 @@ namespace Games {
         isActive = true;
     }
 
-    void MagicSquare::keypadPressed(int button) {
+    void MagicSquare::keypadButtonReleased(int button) {
         fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
         swapKey(button);
     }

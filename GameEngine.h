@@ -23,6 +23,12 @@ namespace Games {
         wavHeaderType wavHeader;
         int sampleRate = 48000;
 
+        bool enabledGames[MERLIN_LIGHTS] = {
+            //          0      1      2      3      4      5     6      7      8      9      10
+                        false, false, false, false, false, true, false, false, false, false, false
+        };
+
+
         bool keyTonesAudible[MERLIN_LIGHTS] = {
 //          0     1     2     3     4     5     6     7     8     9     10
             true, true, true, true, true, true, true, true, true, true, true
@@ -65,7 +71,7 @@ namespace Games {
 
     public:
         virtual void announceGame();
-        virtual void keypadPressed(int button);
+        virtual void keypadButtonReleased(int button);
         pthread_t threadCreate(void* (Games::GameEngine::*)(void*), const char* description, void* args);
         virtual void restartGame();
 

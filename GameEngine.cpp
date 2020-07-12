@@ -121,8 +121,8 @@ namespace Games {
         fprintf(stderr, "restartGame not defined: %s\n", gameName);
     }
 
-    void GameEngine::keypadPressed(int button) {
-        fprintf(stderr, "keypadPressed not defined: %s\n", gameName);
+    void GameEngine::keypadButtonReleased(int button) {
+        fprintf(stderr, "keypad button released not defined: %s\n", gameName);
     }
 
 
@@ -134,6 +134,7 @@ namespace Games {
                 if (value == 0) {
                     if (isActive) {
                         setPixelColor(i, neopixel_wheel(RED));
+                        render();
                     }
 
                     if (i < maxNotes && keyTonesAudible[i]) {
@@ -142,7 +143,7 @@ namespace Games {
                 } else {
                     if (isActive) {
                         setPixelColor(i, pixelColor[pixelMap[i]]);
-                        keypadPressed(i);
+                        keypadButtonReleased(i);
                     }
                 }
             }
