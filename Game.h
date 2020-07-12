@@ -15,6 +15,8 @@ namespace Games {
         void randomizeBoard();
         void swapKey(int i);
         void swapState(int i);
+        void playAchivement();
+        //void* buttonTone(void* args);
 
     public:
         Game();

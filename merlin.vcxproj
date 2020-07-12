@@ -84,6 +84,7 @@
     <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
+    <Media Include="wav\achievement-00.wav" />
     <Media Include="wav\computermove.wav" />
     <Media Include="wav\game_1.wav" />
     <Media Include="wav\game_2.wav" />

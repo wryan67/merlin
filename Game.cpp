@@ -87,7 +87,12 @@ namespace Games {
     }
 
 
-
+    void Game::playAchivement() {
+        printf("game achievement!\n");
+        char cmd[256];
+        sprintf(cmd, "play %s/projects/merlin/wav/achievement-00.wav 2> /dev/null &", getenv("HOME"));
+        system(cmd);
+    }
 
     void* buttonTone(void* args) {
         int button = *((int*)args);
@@ -135,6 +140,7 @@ namespace Games {
             pixelState[9] == 1
             ) {
             isActive = false;
+            playAchivement();
         }
     }
 
