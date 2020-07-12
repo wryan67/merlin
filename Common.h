@@ -18,7 +18,7 @@
 #define RED      88
 #define GREEN   248  
 #define BLUE    168
-
+#define CYAN    216 
 #endif
 
 #ifndef NULL

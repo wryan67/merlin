@@ -1,8 +1,8 @@
 #pragma once
-#include "Game.h"
+#include "GameEngine.h"
 
 namespace Games {
-    class MagicSquare : public Game {
+    class MagicSquare : public GameEngine {
     protected: 
         void keypadPressed(int button);
         void swapKey(int i);

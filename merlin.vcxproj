@@ -66,7 +66,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameEngine.cpp" />
     <ClCompile Include="MagicSquare.cpp" />
     <ClCompile Include="merlin.cpp" />
     <ClCompile Include="NewGame.cpp" />
@@ -76,7 +76,7 @@
   <ItemGroup>
     <ClInclude Include="AllGames.h" />
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="GameEngine.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="MagicSquare.h" />
     <ClInclude Include="NewGame.h" />

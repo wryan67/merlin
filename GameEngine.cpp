@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "GameEngine.h"
 #include <thread>
 
 using namespace std;
@@ -6,8 +6,8 @@ using namespace std;
 namespace Games {
 
 
-    Game::~Game() {}
-    Game::Game() {
+    GameEngine::~GameEngine() {}
+    GameEngine::GameEngine() {
         initWavHeader();
 
         for (int i = 0; i < 11; ++i) {
@@ -32,12 +32,17 @@ namespace Games {
             keypadSoundHandle[i] = openSoundCard(getenv("AUDIODEV"));
         }
         gameName = "undefined game name";
+        gameWav  = "undefined";
     }
 
 
+    void GameEngine::announceGame() {
+        char cmd[256];
+        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null &", getenv("HOME"), gameWav);
+        system(cmd);
+    }
 
-
-    void Game::render() {
+    void GameEngine::render() {
         if (debug) fprintf(stderr, "render: ");
 
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
@@ -51,7 +56,7 @@ namespace Games {
         neopixel_render();
     }
 
-    void Game::initWavHeader() {
+    void GameEngine::initWavHeader() {
         strncpy(wavHeader.chunkID, "RIFF", 4);
         strncpy(wavHeader.format, "WAVE", 4);
         strncpy(wavHeader.subChunk1ID, "fmt ", 4);
@@ -67,7 +72,7 @@ namespace Games {
     }
 
 
-    void Game::playAchivement() {
+    void GameEngine::playAchivement() {
         printf("game achievement!\n");
         char cmd[256];
         sprintf(cmd, "play %s/projects/merlin/wav/achievement-00.wav 2> /dev/null &", getenv("HOME"));
@@ -81,7 +86,7 @@ namespace Games {
     
 
 
-    void Game::initPixels() {
+    void GameEngine::initPixels() {
         for (int c=0;c<256;++c) {
             for (int i = 0; i <= 10; ++i) {
                 pixelColor[pixelMap[i]] = neopixel_wheel(c);
@@ -97,7 +102,7 @@ namespace Games {
 
 
 
-    void Game::swapState(int i) {
+    void GameEngine::swapState(int i) {
         if (pixelState[i] == 1) {
             pixelState[i] = 0;
             pixelColor[pixelMap[i]] = neopixel_wheel(BLUE);
@@ -108,20 +113,20 @@ namespace Games {
     }
 
 
-    void Game::setPixelColor(int button, int color) {
+    void GameEngine::setPixelColor(int button, int color) {
         pixelColor[pixelMap[button]] = color;
     }
 
-    void Game::restartGame() {
+    void GameEngine::restartGame() {
         fprintf(stderr, "restartGame not defined: %s\n", gameName);
     }
 
-    void Game::keypadPressed(int button) {
+    void GameEngine::keypadPressed(int button) {
         fprintf(stderr, "keypadPressed not defined: %s\n", gameName);
     }
 
 
-    void Game::keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
+    void GameEngine::keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
         printf("game engine button activation isActive=%d\n",isActive);
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
             if (gpio == keypadButton[i]) {

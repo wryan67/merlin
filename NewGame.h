@@ -1,8 +1,8 @@
 #pragma once
-#include "Game.h"
+#include "GameEngine.h"
 
 namespace Games {
-    class NewGame : public Game {
+    class NewGame : public GameEngine {
 
     public:
         NewGame();

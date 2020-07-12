@@ -37,16 +37,21 @@ char* soundCardName;
 int currentGame=0;
 
 NewGame game0;
+MagicSquare game1;
+MagicSquare game2;
+MagicSquare game3;
+MagicSquare game4;
 MagicSquare game5;
+MagicSquare game6;
 
-Game* games[7] = {
+GameEngine* games[7] = {
     &game0,
+    &game1,
+    &game2,
+    &game3,
+    &game4,
     &game5,
-    &game5,
-    &game5,
-    &game5,
-    &game5,
-    &game5
+    &game6,
 };
 
 
@@ -81,10 +86,6 @@ void newGameActivation(MCP23x17_GPIO gpio, int value) {
         return;
     }
     games[currentGame]->isActive = false;
-    char cmd[256];
-    printf("NewGame Button pressed\n");
-    sprintf(cmd, "play %s/projects/merlin/wav/newgame.wav 2> /dev/null &", getenv("HOME"));
-    system(cmd);
     startGame(0);
 }
 
@@ -211,7 +212,9 @@ void startGame(int newGame) {
     printf("startig new game: %d\n", newGame);
 
     currentGame = newGame;
+    games[currentGame]->announceGame();
     games[currentGame]->restartGame();
+
 }
 
 int main(int argc, char** argv) {

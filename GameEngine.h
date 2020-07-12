@@ -18,7 +18,7 @@ namespace Games {
 
 
 
-    class Game {
+    class GameEngine {
     protected:
         wavHeaderType wavHeader;
         int sampleRate = 48000;
@@ -41,8 +41,8 @@ namespace Games {
           587.3295, // 11 D5
         };
 
-        Game();
-        virtual ~Game();
+        GameEngine();
+        virtual ~GameEngine();
 
         int pixelColor[MERLIN_LIGHTS];   // color of each pixel
         int pixelState[MERLIN_LIGHTS];   // state of keypad pixel
@@ -54,13 +54,14 @@ namespace Games {
         void playAchivement();
 
 
-
         const char* gameName;
-        
+        const char* gameWav;
+
 
     public:
+        virtual void announceGame();
         virtual void keypadPressed(int button);
-        pthread_t threadCreate(void* (Games::Game::*)(void*), const char* description, void* args);
+        pthread_t threadCreate(void* (Games::GameEngine::*)(void*), const char* description, void* args);
         virtual void restartGame();
 
         void initPixels();
