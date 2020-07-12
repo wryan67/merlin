@@ -1,5 +1,6 @@
 #pragma once
 
-#include "GameEngine.h"
 #include "NewGame.h"
+
+#include "TicTacToe.h"
 #include "MagicSquare.h"

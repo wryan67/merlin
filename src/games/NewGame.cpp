@@ -33,10 +33,8 @@ namespace Games {
     void NewGame::keypadButtonReleased(int button) {
         resetGameBoard();
 
-        switch (button) {
-        case 5:
+        if (enabledGames[button]) {
             startGame(button);
-            break;
         }
     }
 

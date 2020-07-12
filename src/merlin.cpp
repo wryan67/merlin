@@ -36,7 +36,7 @@ char* soundCardName;
 int currentGame=0;
 
 NewGame game0;
-MagicSquare game1;
+TicTacToe game1;
 MagicSquare game2;
 MagicSquare game3;
 MagicSquare game4;
