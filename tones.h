@@ -1,5 +1,7 @@
 #pragma once
 #include <stdint.h>
+#include <alsa/asoundlib.h>
+
 
 
 struct wavHeaderType
@@ -22,3 +24,12 @@ struct chunkHeader {
     char     chunkID[4];  // if "data", then it is a data chunk
     int32_t  chunkSize;   // the size of the data chunk
 };
+
+
+void playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavHeaderType* wavHeader);
+
+void generate_sine(unsigned char* data, snd_pcm_format_t format,
+    wavHeaderType* wavHeader, snd_pcm_uframes_t offset,
+    int count, double* _phase, float freq);
+
+

@@ -65,12 +65,15 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="merlin.cpp" />
+    <ClCompile Include="tones.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tones.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="listSoundCards.sh" />
+    <None Include="Makefile" />
     <None Include="readme.md" />
   </ItemGroup>
   <ItemDefinitionGroup />
