@@ -1,20 +1,13 @@
+#include "Common.h"
+
 #include <wiringPi.h>
-#include <mcp23x17rpi.h>
-#include <stdio.h>
 #include <neopixel.h>
-#include <unordered_map>
-#include <vector>
 
 #include "tones.h"
+#include "Game.h"
 
-using namespace std;
+using namespace Games;
 
-#define MERLIN_LIGHTS 11
-
-#define OFF       0
-#define RED      88
-#define GREEN   248  
-#define BLUE    168
 
 int brightness = 4;
 
@@ -23,19 +16,13 @@ int mcp23x17_x20_address = 0x20;
 int mcp23x17_x20_inta_pin;
 int mcp23x17_x20_intb_pin;
 
-MCP23x17_GPIO keypadButton[MERLIN_LIGHTS];
 MCP23x17_GPIO newGameButton;
 MCP23x17_GPIO hitMeButton;
 MCP23x17_GPIO sameGameButton;
 MCP23x17_GPIO computerTurnButton;
 
-bool gameActive = false;
 
-int sampleRate = 48000;
 
-unordered_map<int, int> pixelMap;
-int pixelColor[MERLIN_LIGHTS];   // color of each pixel
-int pixelState[MERLIN_LIGHTS];   // state of keypad pixel
 
 #define STRIP_TYPE              WS2811_STRIP_RGB
 #define TARGET_FREQ             WS2811_TARGET_FREQ
@@ -46,102 +33,23 @@ int led_count = MERLIN_LIGHTS;  // number of pixels in your led strip
 // sound card stuff
 char* soundCardName;
 
-snd_pcm_t* keypadSoundHandle[MERLIN_LIGHTS];
 
-#define maxNotes 11
-float noteHz[maxNotes] = {
-  0,        // rest
-  195.9977, // 1  G3
-  261.6256, // 3  C4
-  293.6648, // 4  D4
-  329.6276, // 5  E4
-  349.2282, // 6  F4
-  391.9954, // 7  G4
-  440.0000, // 8  A4
-  493.8833, // 9  B4
-  523.2511, // 10 C5
-  587.3295, // 11 D5
-};
-
-wavHeaderType wavHeader;
+Game game = Game();
 
 
-pthread_t threadCreate(void* (*method)(void*), const char* description, void *args) {
-    pthread_t threadId;
 
-    int status = pthread_create(&threadId, NULL, method, args);
-    if (status != 0) {
-        printf("%s::thread create failed %d--%s\n", description, status, strerror(errno));
-        exit(9);
-    }
-    pthread_detach(threadId);
-    return threadId;
+
+
+void keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
+    printf("keypad button activation\n");
+
+    game.keypadButtonActivation(gpio, value);
+
 }
 
-int random(int low, int high) {
-    double r = (double)rand() / RAND_MAX;
 
-    return low + (r * (1 + high - low));
-}
 
-void render() {
-    for (int i = 0; i < MERLIN_LIGHTS; ++i) {
-        neopixel_setPixel(i, pixelColor[i]);
-    }
-    neopixel_render();
-}
 
-void swapState(int i) {
-    if (pixelState[i] == 1) {
-        pixelState[i] = 0;
-        pixelColor[pixelMap[i]] = neopixel_wheel(BLUE);
-    } else {
-        pixelState[i] = 1;
-        pixelColor[pixelMap[i]] = neopixel_wheel(GREEN);
-    }
-}
-
-void randomizeBoard() {
-    for (int i = 1; i <= 9; ++i) {
-        pixelState[i] = random(0, 1);
-        pixelColor[pixelMap[i]] = (pixelState[i] == 0) ? neopixel_wheel(BLUE) : neopixel_wheel(GREEN);
-    }
-    render();
-    gameActive = true;
-}
-
-void swapKey(int i) {
-    //vector<int> todo;
-
-    switch (i) {
-    case 1:  swapState(1); swapState(2); swapState(4); swapState(5); break;
-    case 3:  swapState(2); swapState(3); swapState(5); swapState(6); break;
-    case 7:  swapState(7); swapState(8); swapState(4); swapState(5); break;
-    case 9:  swapState(8); swapState(9); swapState(5); swapState(6); break;
-
-    case 2:  swapState(1); swapState(2); swapState(3); break;
-    case 4:  swapState(1); swapState(4); swapState(7); break;
-    case 6:  swapState(3); swapState(6); swapState(9); break;
-    case 8:  swapState(7); swapState(8); swapState(9); break;
-
-    case 5:  swapState(5); swapState(2); swapState(4); swapState(6); swapState(8); break;
-    default: pixelColor[pixelMap[i]] = 0;
-
-    }
-    render();
-    if (pixelState[1] == 1 &&
-        pixelState[2] == 1 &&
-        pixelState[3] == 1 &&
-        pixelState[4] == 1 &&
-        pixelState[5] == 0 &&
-        pixelState[6] == 1 &&
-        pixelState[7] == 1 &&
-        pixelState[8] == 1 &&
-        pixelState[9] == 1 
-        ) {
-        gameActive = false;
-    }
-}
 
 void sameGameActivation(MCP23x17_GPIO gpio, int value) {
     if (value != 0) {
@@ -151,18 +59,19 @@ void sameGameActivation(MCP23x17_GPIO gpio, int value) {
     printf("SameGame Button pressed\n");
     sprintf(cmd,"play %s/projects/merlin/wav/samegame.wav 2> /dev/null &",getenv("HOME"));
     system(cmd);
-    randomizeBoard();
+    game.restartGame();
 }
 
 void newGameActivation(MCP23x17_GPIO gpio, int value) {
     if (value != 0) {
         return;
     }
+    game.isActive = false;
     char cmd[256];
     printf("NewGame Button pressed\n");
     sprintf(cmd, "play %s/projects/merlin/wav/newgame.wav 2> /dev/null &", getenv("HOME"));
     system(cmd);
-
+    
 }
 
 
@@ -170,41 +79,7 @@ void newGameActivation(MCP23x17_GPIO gpio, int value) {
 
 
 
-void* buttonTone(void* args) {
-    int button = *((int*)args);
-    snd_pcm_t* soundCardHandle=keypadSoundHandle[button];
-    free(args);
 
-    if (button < maxNotes) {
-        playTone(soundCardHandle, noteHz[button], .45, &wavHeader);
-    }
-    pthread_exit(0);
-}
-
-void keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
-    printf("keypad button activation\n");
-
-    for (int i = 0; i < MERLIN_LIGHTS; ++i) {
-        if (gpio == keypadButton[i]) {
-            printf("keypad key=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio)+'A', mcp23x17_getPin(gpio), value);
-            if (value == 0) {
-                if (gameActive) {
-                    pixelColor[pixelMap[i]] = neopixel_wheel(RED);
-                }
-
-                int* button = (int*) malloc(sizeof(int));
-                *button = i;
-                threadCreate(buttonTone, "buttonTone", button);
-                
-            } else {
-                if (gameActive) {
-                    swapKey(i);
-                } 
-            }
-        }
-    }
-    render();
-}
 
 
 int envGetInteger(const char* var, const char* format) {
@@ -228,43 +103,12 @@ int envGetInteger(const char* var, const char* format) {
     }
 }
 
-snd_pcm_t* openSoundCard(const char* soundCardName) {
-    int err;
 
-    if (strlen(soundCardName) == 0) {
-        soundCardName = "default";
-    }
-
-    snd_pcm_t* soundCardHandle;
-
-    if ((err = snd_pcm_open(&soundCardHandle, soundCardName, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
-        printf("Playback open error: %s\n", snd_strerror(err));
-        exit(EXIT_FAILURE);
-    }
-
-    return soundCardHandle;
-}                                             // end of setup function
-
-void initWavHeader() {
-    strncpy(wavHeader.chunkID, "RIFF", 4);
-    strncpy(wavHeader.format, "WAVE", 4);
-    strncpy(wavHeader.subChunk1ID, "fmt ", 4);
-    wavHeader.fileSize = 9;
-    wavHeader.subChunk1Size = 16;
-    wavHeader.audioFormat = 1;
-    wavHeader.channels = 1;
-    wavHeader.sampleRate = sampleRate;
-    wavHeader.bitsPerSample = 16;
-    wavHeader.blockAlign = wavHeader.bitsPerSample / 8;
-    wavHeader.byteRate = wavHeader.sampleRate * wavHeader.channels * wavHeader.blockAlign;
-
-}
 
 bool setup() {
     int rc;
     mcp23x17_setDebug(false);
-    initWavHeader();
-
+    
     int seed;
     FILE* fp;
     fp = fopen("/dev/urandom", "r");
@@ -294,10 +138,10 @@ bool setup() {
     for (int i = 0; i < 11; ++i) {
         char name[32];
         sprintf(name, "KEYPAD_%d", i);
-        keypadButton[i] = getEnvMCP23x17_GPIO(name);
-        printf("keypad key=%d config:  port=%c  pin=%d\n", i, mcp23x17_getPort(keypadButton[i]) + 'A', mcp23x17_getPin(keypadButton[i]));
+        MCP23x17_GPIO button = getEnvMCP23x17_GPIO(name);
+        printf("keypad key=%d config:  port=%c  pin=%d\n", i, mcp23x17_getPort(button) + 'A', mcp23x17_getPin(button));
 
-        mcp23x17_setPinInputMode(keypadButton[i], TRUE, keypadButtonActivation);
+        mcp23x17_setPinInputMode(button, TRUE, keypadButtonActivation);
     }
 
     newGameButton = getEnvMCP23x17_GPIO("NEW_GAME");
@@ -308,17 +152,6 @@ bool setup() {
     mcp23x17_setPinInputMode(sameGameButton, TRUE, sameGameActivation);
     mcp23x17_setPinInputMode(newGameButton,  TRUE, newGameActivation);
 
-    pixelMap[0] = 3;
-    pixelMap[1] = 2;
-    pixelMap[2] = 4;
-    pixelMap[3] = 10;
-    pixelMap[4] = 1;
-    pixelMap[5] = 5;
-    pixelMap[6] = 9;
-    pixelMap[7] = 0;
-    pixelMap[8] = 6;
-    pixelMap[9] = 8;
-    pixelMap[10] = 7;
 
 
     int ret = neopixel_init(STRIP_TYPE, WS2811_TARGET_FREQ, DMA, GPIO_PIN, led_count);
@@ -328,9 +161,7 @@ bool setup() {
         return false;
     }
 
-    for (int i = 0; i < MERLIN_LIGHTS; ++i) {
-        keypadSoundHandle[i]= openSoundCard(getenv("AUDIODEV"));
-    }
+
 
     return true;
 }
@@ -384,11 +215,10 @@ int main(int argc, char** argv) {
 
     neopixel_setBrightness(brightness);
     for (int i = 0; i < MERLIN_LIGHTS; ++i) {
-        pixelColor[i] = OFF; // neopixel_wheel(BLUE);
+        game.setPixelColor(i, OFF); 
     }
-    render();
+    game.restartGame();
 
-    randomizeBoard();
 
     while (true)
 	{

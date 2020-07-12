@@ -65,10 +65,16 @@
     </RemotePostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="merlin.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="tones.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="tones.h" />
   </ItemGroup>
   <ItemGroup>

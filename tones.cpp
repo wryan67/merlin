@@ -116,3 +116,6 @@ void playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavHeaderT
 
     free(data);
 }
+
+
+
