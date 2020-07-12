@@ -10,6 +10,7 @@ merlin: merlin.cpp -lasound -lwiringPiMCP23x17rpi -lNeoPixelRPi tones.o
 	@g++ ${CFLAGS} -o merlin merlin.cpp tones.o ${LIBS}
 	@mkdir -p bin/ARM/Debug
 	@cp -p merlin bin/ARM/Debug/merlin.out 2> /dev/null
+	@sudo ln -fs ${HOME}/projects/merlin/merlin.sh /usr/local/bin/merlin
 
 #g++ -o merlin.out merlin.cpp -l"pthread" -l"wiringPi" -l"wiringPiDev" -l"wiringPiPca9685" -l"wiringPiMCP23x17rpi" -l"wiringPiADS1115rpi" -l"wiringPiPCA9635rpi" -l"NeoPixelRPi" -l"asound" -Wall -z now 
 

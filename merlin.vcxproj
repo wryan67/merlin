@@ -74,6 +74,7 @@
   <ItemGroup>
     <None Include="listSoundCards.sh" />
     <None Include="Makefile" />
+    <None Include="merlin.sh" />
     <None Include="readme.md" />
   </ItemGroup>
   <ItemDefinitionGroup />
