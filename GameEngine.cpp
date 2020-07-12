@@ -136,7 +136,7 @@ namespace Games {
                         setPixelColor(i, neopixel_wheel(RED));
                     }
 
-                    if (i < maxNotes) {
+                    if (i < maxNotes && keyTonesAudible[i]) {
                         new thread(buttonTone, noteHz[i], &wavHeader, keypadSoundHandle[i]);
                     }
                 } else {

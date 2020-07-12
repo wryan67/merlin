@@ -23,6 +23,11 @@ namespace Games {
         wavHeaderType wavHeader;
         int sampleRate = 48000;
 
+        bool keyTonesAudible[MERLIN_LIGHTS] = {
+//          0     1     2     3     4     5     6     7     8     9     10
+            true, true, true, true, true, true, true, true, true, true, true
+        };
+
         MCP23x17_GPIO keypadButton[MERLIN_LIGHTS];
 
         snd_pcm_t* keypadSoundHandle[MERLIN_LIGHTS];

@@ -7,6 +7,9 @@ namespace Games {
     NewGame::NewGame(): GameEngine() {
         gameName = "New Game";
         gameWav = "newgame.wav";
+
+        keyTonesAudible[5] = false;
+
     }
 
     void NewGame::restartGame() {
