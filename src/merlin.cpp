@@ -3,8 +3,7 @@
 #include <wiringPi.h>
 #include <neopixel.h>
 
-#include "tones.h"
-#include "AllGames.h"
+#include "games/AllGames.h"
 
 using namespace Games;
 

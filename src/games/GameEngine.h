@@ -3,13 +3,12 @@
 #include <neopixel.h>
 #include <unordered_map>
 #include <vector>
+
 #include <alsa/asoundlib.h>
-#include "tones.h"
-#include <neopixel.h>
+#include "../audio/tones.h"
 
 
-#include "Common.h"
-#include "pthread.h"
+#include "../Common.h"
 
 using namespace std;
 
@@ -72,7 +71,6 @@ namespace Games {
     public:
         virtual void announceGame();
         virtual void keypadButtonReleased(int button);
-        pthread_t threadCreate(void* (Games::GameEngine::*)(void*), const char* description, void* args);
         virtual void restartGame();
 
         void initPixels();
