@@ -55,6 +55,8 @@ void generate_sine(unsigned char* data, snd_pcm_format_t format,
 void sendHeader(snd_pcm_t* soundCardHandle, wavHeaderType* wavHeader) {
     int err;
 
+    snd_pcm_drop(soundCardHandle);
+
     if ((err = snd_pcm_set_params(soundCardHandle,
         SND_PCM_FORMAT_S16_LE,
         SND_PCM_ACCESS_RW_INTERLEAVED,
@@ -76,7 +78,6 @@ void drainSound(snd_pcm_t* soundCardHandle) {
 }
 
 void playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavHeaderType* wavHeader) {
-
     long dataSize = wavHeader->blockAlign * wavHeader->sampleRate * duration;
 
     void* data = malloc(dataSize);

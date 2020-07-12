@@ -144,10 +144,26 @@ void swapKey(int i) {
 }
 
 void sameGameActivation(MCP23x17_GPIO gpio, int value) {
+    if (value != 0) {
+        return;
+    }
+    char cmd[256];
     printf("SameGame Button pressed\n");
+    sprintf(cmd,"play %s/projects/merlin/wav/samegame.wav 2> /dev/null &",getenv("HOME"));
+    system(cmd);
     randomizeBoard();
 }
 
+void newGameActivation(MCP23x17_GPIO gpio, int value) {
+    if (value != 0) {
+        return;
+    }
+    char cmd[256];
+    printf("NewGame Button pressed\n");
+    sprintf(cmd, "play %s/projects/merlin/wav/newgame.wav 2> /dev/null &", getenv("HOME"));
+    system(cmd);
+
+}
 
 
 
@@ -290,6 +306,7 @@ bool setup() {
     computerTurnButton = getEnvMCP23x17_GPIO("COMP_TURN");
 
     mcp23x17_setPinInputMode(sameGameButton, TRUE, sameGameActivation);
+    mcp23x17_setPinInputMode(newGameButton,  TRUE, newGameActivation);
 
     pixelMap[0] = 3;
     pixelMap[1] = 2;

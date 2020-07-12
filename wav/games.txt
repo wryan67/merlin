@@ -1,0 +1,6 @@
+Tic-Tac-Toe
+Music Machine
+Simon Says
+Blackjack 13
+Magic Square
+Code Breaker

@@ -77,6 +77,23 @@
     <None Include="merlin.sh" />
     <None Include="readme.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="wav\computermove.wav" />
+    <Media Include="wav\game_1.wav" />
+    <Media Include="wav\game_2.wav" />
+    <Media Include="wav\game_3.wav" />
+    <Media Include="wav\game_4.wav" />
+    <Media Include="wav\game_5.wav" />
+    <Media Include="wav\game_6.wav" />
+    <Media Include="wav\hitme.wav" />
+    <Media Include="wav\humanmove.wav" />
+    <Media Include="wav\newgame.wav" />
+    <Media Include="wav\samegame.wav" />
+    <Media Include="wav\yourmove.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="wav\games.txt" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
