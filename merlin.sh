@@ -26,6 +26,10 @@ COMP_TURN="${MCP23017_ADDRESS}_B_0"
 
 ps -ef | awk '{if (/merlin.out/ && !/awk/) system(sprintf("sudo kill %d",$2))}'
 
-sudo chown root $HOME/projects/merlin/bin/ARM/Debug/merlin.out
-sudo chmod u+s $HOME/projects/merlin/bin/ARM/Debug/merlin.out
-$HOME/projects/merlin/bin/ARM/Debug/merlin.out
+if [ ! -s /home/wryan/projects/merlin/bin/ARM/Debug/merlin.out ];then
+  echo game is not compiled
+  exit 2
+fi
+
+echo starting merlin...
+sudo -E $HOME/projects/merlin/bin/ARM/Debug/merlin.out

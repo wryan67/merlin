@@ -25,6 +25,9 @@
 #define NULL 0
 #endif
 
+extern bool debug;
+
+void startGame(int game);
 
 pthread_t threadCreate(void* (*method)(void*), const char* description, void* args);
 int random(int low, int high);

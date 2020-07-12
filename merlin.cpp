@@ -4,12 +4,12 @@
 #include <neopixel.h>
 
 #include "tones.h"
-#include "Game.h"
+#include "AllGames.h"
 
 using namespace Games;
 
 
-int brightness = 4;
+int brightness = 10;
 
 int mcp23x17_x20_handle = -1;
 int mcp23x17_x20_address = 0x20;
@@ -21,7 +21,7 @@ MCP23x17_GPIO hitMeButton;
 MCP23x17_GPIO sameGameButton;
 MCP23x17_GPIO computerTurnButton;
 
-
+bool debug=false;
 
 
 #define STRIP_TYPE              WS2811_STRIP_RGB
@@ -34,7 +34,21 @@ int led_count = MERLIN_LIGHTS;  // number of pixels in your led strip
 char* soundCardName;
 
 
-Game game = Game();
+int currentGame=0;
+
+NewGame game0;
+MagicSquare game5;
+
+Game* games[7] = {
+    &game0,
+    &game5,
+    &game5,
+    &game5,
+    &game5,
+    &game5,
+    &game5
+};
+
 
 
 
@@ -43,7 +57,7 @@ Game game = Game();
 void keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
     printf("keypad button activation\n");
 
-    game.keypadButtonActivation(gpio, value);
+    games[currentGame]->keypadButtonActivation(gpio, value);
 
 }
 
@@ -59,26 +73,20 @@ void sameGameActivation(MCP23x17_GPIO gpio, int value) {
     printf("SameGame Button pressed\n");
     sprintf(cmd,"play %s/projects/merlin/wav/samegame.wav 2> /dev/null &",getenv("HOME"));
     system(cmd);
-    game.restartGame();
+    games[currentGame]->restartGame();
 }
 
 void newGameActivation(MCP23x17_GPIO gpio, int value) {
     if (value != 0) {
         return;
     }
-    game.isActive = false;
+    games[currentGame]->isActive = false;
     char cmd[256];
     printf("NewGame Button pressed\n");
     sprintf(cmd, "play %s/projects/merlin/wav/newgame.wav 2> /dev/null &", getenv("HOME"));
     system(cmd);
-    
+    startGame(0);
 }
-
-
-
-
-
-
 
 
 
@@ -107,6 +115,14 @@ int envGetInteger(const char* var, const char* format) {
 
 bool setup() {
     int rc;
+    rc = neopixel_init(STRIP_TYPE, WS2811_TARGET_FREQ, DMA, GPIO_PIN, led_count + 10);
+
+    if (rc != 0) {
+        fprintf(stderr, "neopixel initialization failed: %s\n", neopixel_error(rc));
+        return false;
+    }
+
+
     mcp23x17_setDebug(false);
     
     int seed;
@@ -152,17 +168,6 @@ bool setup() {
     mcp23x17_setPinInputMode(sameGameButton, TRUE, sameGameActivation);
     mcp23x17_setPinInputMode(newGameButton,  TRUE, newGameActivation);
 
-
-
-    int ret = neopixel_init(STRIP_TYPE, WS2811_TARGET_FREQ, DMA, GPIO_PIN, led_count);
-
-    if (ret != 0) {
-        fprintf(stderr, "neopixel initialization failed: %s\n", neopixel_error(ret));
-        return false;
-    }
-
-
-
     return true;
 }
 
@@ -202,6 +207,13 @@ bool commandLineOptions(int argc, char** argv) {
     return true;
 }
 
+void startGame(int newGame) {
+    printf("startig new game: %d\n", newGame);
+
+    currentGame = newGame;
+    games[currentGame]->restartGame();
+}
+
 int main(int argc, char** argv) {
     if (!commandLineOptions(argc, argv)) {
         return 2;
@@ -214,12 +226,10 @@ int main(int argc, char** argv) {
     }
 
     neopixel_setBrightness(brightness);
-    for (int i = 0; i < MERLIN_LIGHTS; ++i) {
-        game.setPixelColor(i, OFF); 
-    }
 
-    game.initPixels();
-    game.restartGame();
+    games[currentGame]->initPixels();
+
+    startGame(0);
 
     while (true)
 	{

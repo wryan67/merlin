@@ -1,40 +1,12 @@
 #include "Game.h"
-#include <alsa/asoundlib.h>
-#include "tones.h"
-#include <neopixel.h>
-#include <unordered_map>
-#include <vector>
+#include <thread>
 
 using namespace std;
 
 namespace Games {
-    wavHeaderType wavHeader;
-    int sampleRate = 48000;
-
-    unordered_map<int, int> pixelMap;
-    MCP23x17_GPIO keypadButton[MERLIN_LIGHTS];
-
-    snd_pcm_t* keypadSoundHandle[MERLIN_LIGHTS];
-
-    float noteHz[maxNotes] = {
-      0,        // rest
-      195.9977, // 1  G3
-      261.6256, // 3  C4
-      293.6648, // 4  D4
-      329.6276, // 5  E4
-      349.2282, // 6  F4
-      391.9954, // 7  G4
-      440.0000, // 8  A4
-      493.8833, // 9  B4
-      523.2511, // 10 C5
-      587.3295, // 11 D5
-    };
-
-    int pixelColor[MERLIN_LIGHTS];   // color of each pixel
-    int pixelState[MERLIN_LIGHTS];   // state of keypad pixel
 
 
-
+    Game::~Game() {}
     Game::Game() {
         initWavHeader();
 
@@ -59,15 +31,23 @@ namespace Games {
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
             keypadSoundHandle[i] = openSoundCard(getenv("AUDIODEV"));
         }
-
+        gameName = "undefined game name";
     }
 
 
 
+
     void Game::render() {
+        if (debug) fprintf(stderr, "render: ");
+
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
+            if (debug) fprintf(stderr, "[%d:%d]", i, pixelColor[pixelMap[i]]);
             neopixel_setPixel(i, pixelColor[i]);
         }
+        if (debug) {
+            fprintf(stderr,"\n"); fflush(stderr);
+        }
+    
         neopixel_render();
     }
 
@@ -94,28 +74,19 @@ namespace Games {
         system(cmd);
     }
 
-    void* buttonTone(void* args) {
-        int button = *((int*)args);
-        snd_pcm_t* soundCardHandle = keypadSoundHandle[button];
-        free(args);
-
-        if (button < maxNotes) {
-            playTone(soundCardHandle, noteHz[button], .45, &wavHeader);
-        }
-        pthread_exit(0);
+    void* buttonTone(float freq, wavHeaderType *wavHeader, snd_pcm_t* soundCardHandle) {
+        playTone(soundCardHandle, freq, .45, wavHeader);
     }
 
     
-    void Game::restartGame() {
-        randomizeBoard();
-    }
+
 
     void Game::initPixels() {
         for (int c=0;c<256;++c) {
             for (int i = 0; i <= 10; ++i) {
                 pixelColor[pixelMap[i]] = neopixel_wheel(c);
             }
-            usleep(10 * 1000);
+            usleep(5 * 1000);
             render();
         }
         for (int i = 0; i <= 10; ++i) {
@@ -124,39 +95,7 @@ namespace Games {
     }
 
 
-    void Game::swapKey(int i) {
-        //vector<int> todo;
 
-        switch (i) {
-        case 1:  swapState(1); swapState(2); swapState(4); swapState(5); break;
-        case 3:  swapState(2); swapState(3); swapState(5); swapState(6); break;
-        case 7:  swapState(7); swapState(8); swapState(4); swapState(5); break;
-        case 9:  swapState(8); swapState(9); swapState(5); swapState(6); break;
-
-        case 2:  swapState(1); swapState(2); swapState(3); break;
-        case 4:  swapState(1); swapState(4); swapState(7); break;
-        case 6:  swapState(3); swapState(6); swapState(9); break;
-        case 8:  swapState(7); swapState(8); swapState(9); break;
-
-        case 5:  swapState(5); swapState(2); swapState(4); swapState(6); swapState(8); break;
-        default: pixelColor[pixelMap[i]] = 0;
-
-        }
-        render();
-        if (pixelState[1] == 1 &&
-            pixelState[2] == 1 &&
-            pixelState[3] == 1 &&
-            pixelState[4] == 1 &&
-            pixelState[5] == 0 &&
-            pixelState[6] == 1 &&
-            pixelState[7] == 1 &&
-            pixelState[8] == 1 &&
-            pixelState[9] == 1
-            ) {
-            isActive = false;
-            playAchivement();
-        }
-    }
 
     void Game::swapState(int i) {
         if (pixelState[i] == 1) {
@@ -168,45 +107,41 @@ namespace Games {
         }
     }
 
-    void Game::randomizeBoard() {
-        for (int i = 1; i <= 9; ++i) {
-            pixelState[i] = random(0, 1);
-            pixelColor[pixelMap[i]] = (pixelState[i] == 0) ? neopixel_wheel(BLUE) : neopixel_wheel(GREEN);
-        }
-        render();
-        isActive = true;
-    }
 
     void Game::setPixelColor(int button, int color) {
         pixelColor[pixelMap[button]] = color;
     }
 
+    void Game::restartGame() {
+        fprintf(stderr, "restartGame not defined: %s\n", gameName);
+    }
+
+    void Game::keypadPressed(int button) {
+        fprintf(stderr, "keypadPressed not defined: %s\n", gameName);
+    }
 
 
     void Game::keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
-
+        printf("game engine button activation isActive=%d\n",isActive);
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
             if (gpio == keypadButton[i]) {
                 printf("keypad key=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio) + 'A', mcp23x17_getPin(gpio), value);
                 if (value == 0) {
                     if (isActive) {
                         setPixelColor(i, neopixel_wheel(RED));
-
                     }
 
-                    int* button = (int*)malloc(sizeof(int));
-                    *button = i;
-                    threadCreate(buttonTone, "buttonTone", button);
-
-                }
-                else {
+                    if (i < maxNotes) {
+                        new thread(buttonTone, noteHz[i], &wavHeader, keypadSoundHandle[i]);
+                    }
+                } else {
                     if (isActive) {
-                        swapKey(i);
+                        setPixelColor(i, pixelColor[pixelMap[i]]);
+                        keypadPressed(i);
                     }
                 }
             }
         }
-        render();
     }
 };
 

@@ -67,13 +67,19 @@
   <ItemGroup>
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="MagicSquare.cpp" />
     <ClCompile Include="merlin.cpp" />
+    <ClCompile Include="NewGame.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="tones.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AllGames.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Header.h" />
+    <ClInclude Include="MagicSquare.h" />
+    <ClInclude Include="NewGame.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="tones.h" />
   </ItemGroup>
