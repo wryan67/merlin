@@ -5,16 +5,17 @@ namespace Games {
     class Echo : public GameEngine {
     private:
         vector<int> song;
+        bool isPlaying;
 
     protected: 
         void keypadButtonReleased(int button);
         void computerTurn();
-        void randomizeBoard();
         void restartGame();
-
+        void clearBoard();
 
     public:
         Echo();
+        
     };
 }
 

@@ -1,5 +1,5 @@
 Tic-Tac-Toe
-Music Machine
+Echo
 Simon Says
 Blackjack 13
 Magic Square

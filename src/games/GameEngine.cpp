@@ -88,7 +88,13 @@ namespace Games {
         system(cmd);
     }
 
-
+    void GameEngine::setPixel(int button, int wheelColor) {
+        if (wheelColor < 0 || wheelColor>255) {
+            pixelColor[pixelMap[button]] = OFF;
+        } else {
+            pixelColor[pixelMap[button]] = neopixel_wheel(wheelColor);
+        }
+    }
 
     void GameEngine::playWav(const char *filename, bool background) {
         char cmd[256];

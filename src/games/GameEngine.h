@@ -67,6 +67,7 @@ namespace Games {
         void swapState(int i);
         void playAchivement();
         void playFailed();
+        void setPixel(int button, int wheelColor);
         void playWav(const char* filename, bool background);
 
 
