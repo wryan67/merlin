@@ -104,6 +104,11 @@ namespace Games {
     void GameEngine::keyTone(int button) {
         new thread(buttonTone, noteHz[button], &wavHeader, keypadSoundHandle[button]);
     }
+
+    void GameEngine::interrupt() {
+        printf("game interrupt\n");
+        interruptFlag = true;
+    }
     
 
     void GameEngine::initPixels() {

@@ -24,6 +24,10 @@ SAME_GAME="${MCP23017_ADDRESS}_B_6"
 HIT_ME="${MCP23017_ADDRESS}_A_7"
 COMP_TURN="${MCP23017_ADDRESS}_B_0"
 
+if [ -t 0 ];then
+ echo interactive shell detected
+ ps -ef | awk '{if (/boot.merlin/ && !/awk/) system(sprintf("sudo kill %d",$2))}'
+fi
 ps -ef | awk '{if (/merlin.out/ && !/awk/) system(sprintf("sudo kill %d",$2))}'
 
 if [ ! -s /home/wryan/projects/merlin/bin/ARM/Debug/merlin.out ];then

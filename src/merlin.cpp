@@ -35,13 +35,13 @@ char* soundCardName;
 
 int currentGame=0;
 
-NewGame game0;
-TicTacToe game1;
-MagicSquare game2;
-MagicSquare game3;
-MagicSquare game4;
-MagicSquare game5;
-MagicSquare game6;
+NewGame        game0;
+TicTacToe      game1;
+Echo           game2;
+MagicSquare    game3;
+MagicSquare    game4;
+MagicSquare    game5;
+MagicSquare    game6;
 
 GameEngine* games[7] = {
     &game0,
@@ -52,10 +52,6 @@ GameEngine* games[7] = {
     &game5,
     &game6,
 };
-
-
-
-
 
 
 void keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
@@ -84,6 +80,7 @@ void newGameActivation(MCP23x17_GPIO gpio, int value) {
     if (value != 0) {
         return;
     }
+    games[currentGame]->interrupt();
     games[currentGame]->isActive = false;
     startGame(0);
 }

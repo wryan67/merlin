@@ -14,7 +14,7 @@ namespace Games {
             if (enabledGames[i]) {
                 pixelState[i] = 0;
                 pixelColor[pixelMap[i]] = neopixel_wheel(CYAN);
-                keyTonesAudible[5] = false;
+                keyTonesAudible[i] = false;
             }
             else {
                 pixelState[0] = 0;

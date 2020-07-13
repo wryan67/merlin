@@ -26,16 +26,10 @@ namespace Games {
 
     class GameEngine {
     protected:
+        bool interruptFlag;
         wavHeaderType wavHeader;
         snd_pcm_t* globalSoundCardHandle;
         int sampleRate = 48000;
-
-        
-
-        bool enabledGames[MERLIN_LIGHTS] = {
-            //          0      1      2      3      4      5     6      7      8      9      10
-                        false, true, false, false, false, true, false, false, false, false, false
-        };
 
 
         bool keyTonesAudible[MERLIN_LIGHTS] = {
@@ -87,7 +81,7 @@ namespace Games {
         virtual void hitMe();
         virtual void computerTurn();
         virtual void keyTone(int button);
-
+        virtual void interrupt();
 
 
         void initPixels();
