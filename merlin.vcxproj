@@ -94,7 +94,9 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="wav\achievement-00.wav" />
+    <Media Include="wav\catwon.wav" />
     <Media Include="wav\computermove.wav" />
+    <Media Include="wav\phone_full.wav" />
     <Media Include="wav\tictactoe.wav" />
     <Media Include="wav\musicmachine.wav" />
     <Media Include="wav\simonsays.wav" />
@@ -105,6 +107,7 @@
     <Media Include="wav\humanmove.wav" />
     <Media Include="wav\newgame.wav" />
     <Media Include="wav\samegame.wav" />
+    <Media Include="wav\waiting.wav" />
     <Media Include="wav\youlose.wav" />
     <Media Include="wav\yourmove.wav" />
   </ItemGroup>

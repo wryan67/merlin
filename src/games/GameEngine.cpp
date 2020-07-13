@@ -90,9 +90,9 @@ namespace Games {
 
 
 
-    void GameEngine::playWav(const char *filename) {
+    void GameEngine::playWav(const char *filename, bool background) {
         char cmd[256];
-        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null &", getenv("HOME"), filename);
+        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null %s", getenv("HOME"), filename, (background)?"&":"");
         system(cmd);
     }
 

@@ -73,7 +73,7 @@ namespace Games {
         void swapState(int i);
         void playAchivement();
         void playFailed();
-        void playWav(const char* filename);
+        void playWav(const char* filename, bool background);
 
 
         const char* gameName;

@@ -19,20 +19,20 @@ namespace Games {
     }
 
     void MagicSquare::restartGame() {
-        fprintf(stderr, "%s\n", gameName);
+        printf("%s\n", gameName);
 
         randomizeBoard();
         isActive = true;
     }
 
     void MagicSquare::keypadButtonReleased(int button) {
-        fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
+        if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
         swapKey(button);
     }
 
     void MagicSquare::swapKey(int i) {
-        //vector<int> todo;
-        printf("ms:keypressed=%d\n",i);
+        if (debug) printf("Magic Square: keypressed=%d\n",i);
+
         switch (i) {
         case 1:  swapState(1); swapState(2); swapState(4); swapState(5); break;
         case 3:  swapState(2); swapState(3); swapState(5); swapState(6); break;

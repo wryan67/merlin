@@ -30,9 +30,15 @@ namespace Games {
     }
 
     void TicTacToe::computerTurn() {
+        bool gameOver;
+        int  winner;
+        vector<int> validMoves;
+        if (!isActive) {
+            return;
+        }
+        isActive = false;
         fprintf(stderr, "computer turn\n");
 
-        vector<int> validMoves;
 
         for (int i = 1; i <= 9; ++i) {
             if (pixelState[i] == EMPTY) {
@@ -41,14 +47,55 @@ namespace Games {
         }
         printf("there are %d moves left\n", validMoves.size());
 
-        if (validMoves.size() > 0) {
-            int move = validMoves[random(0, validMoves.size()-1)];
+// can computer win?
+        for (int move : validMoves) {
             pixelState[move] = COMPUTER;
-            pixelColor[pixelMap[move]] = neopixel_wheel(BLUE);
-            render();
-            playWav("computermove.wav");
+            checkGameStatus(gameOver, winner);
+
+            if (gameOver && winner == COMPUTER) {
+                computerMovesHere(move);
+                return;
+            }
+            pixelState[move] = EMPTY;
         }
 
+// can human win?
+        for (int move : validMoves) {
+            pixelState[move] = HUMAN;
+            checkGameStatus(gameOver, winner);
+
+            if (gameOver && winner == HUMAN) {
+                computerMovesHere(move);
+                return;
+            }
+            pixelState[move] = EMPTY;
+        }
+
+// is Middle open?
+        for (int move : validMoves) {
+            if (move == 5) {
+                if (random(1, 2) == 1) {
+                    computerMovesHere(move);
+                    return;
+                }
+            }
+        }
+
+
+        if (validMoves.size() > 0) {
+            int move = validMoves[random(0, validMoves.size()-1)];
+            computerMovesHere(move);
+            return;
+        }
+
+        isActive = checkGameStatus();
+    }
+
+    void TicTacToe::computerMovesHere(int move) {
+        pixelState[move] = COMPUTER;
+        pixelColor[pixelMap[move]] = neopixel_wheel(BLUE);
+        render();
+        playWav("computermove.wav", true);
         isActive = checkGameStatus();
     }
 
@@ -58,10 +105,9 @@ namespace Games {
         playTone(globalSoundCardHandle, 123.47, 0.55, &wavHeader);
     }
 
-    bool TicTacToe::checkGameStatus() {
-        bool gameOver = false;
-        int  winner;
-
+    void TicTacToe::checkGameStatus(bool& gameOver, int& winner) {
+        gameOver = false;
+        winner = CAT;
 
         for (int row = 1; !gameOver && row <= 7; row += 3) {
             if ((pixelState[row] == pixelState[row + 1]) && (pixelState[row + 1] == pixelState[row + 2])) {
@@ -108,7 +154,13 @@ namespace Games {
                 winner = CAT;
             }
         }
+    }
 
+    bool TicTacToe::checkGameStatus() {
+        bool gameOver;
+        int  winner;
+
+        checkGameStatus(gameOver, winner);
 
         if (gameOver) {
             if (winner == HUMAN) {
@@ -121,7 +173,7 @@ namespace Games {
             }
             if (winner == CAT) {
                 printf("game over, cat won!\n");
-                playWav("catwon.wav");
+                playWav("catwon.wav", true);
             }
         }
         return !gameOver;
@@ -151,6 +203,13 @@ namespace Games {
         keyTone(button);
 
         isActive = checkGameStatus();
+        if (isActive) {
+            isActive = false;
+            usleep(600 * 1000);
+//            playWav("waiting.wav", false);
+            isActive = true;
+            computerTurn();
+        }
     }
 
 }

@@ -59,7 +59,7 @@ GameEngine* games[7] = {
 
 
 void keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
-    printf("keypad button activation\n");
+    if (debug) fprintf(stderr,"keypad button activation\n");
 
     games[currentGame]->keypadButtonActivation(gpio, value);
 
