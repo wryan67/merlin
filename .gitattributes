@@ -1,7 +1,12 @@
+.sh   binary
+.ksh  binary
+.c    binary
+.cpp  binary
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
+
 
 ###############################################################################
 # Set default behavior for command prompt diff.
