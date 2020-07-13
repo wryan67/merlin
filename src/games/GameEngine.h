@@ -12,15 +12,25 @@
 
 using namespace std;
 
+
+
+
 namespace Games {
 
+#define EMPTY     0
+#define HUMAN     1
+#define COMPUTER  2
+#define CAT       3
 
-
+    void* buttonTone(float freq, wavHeaderType* wavHeader, snd_pcm_t* soundCardHandle);
 
     class GameEngine {
     protected:
         wavHeaderType wavHeader;
+        snd_pcm_t* globalSoundCardHandle;
         int sampleRate = 48000;
+
+        
 
         bool enabledGames[MERLIN_LIGHTS] = {
             //          0      1      2      3      4      5     6      7      8      9      10
@@ -62,6 +72,8 @@ namespace Games {
         void render();
         void swapState(int i);
         void playAchivement();
+        void playFailed();
+        void playWav(const char* filename);
 
 
         const char* gameName;
@@ -70,8 +82,13 @@ namespace Games {
 
     public:
         virtual void announceGame();
-        virtual void keypadButtonReleased(int button);
         virtual void restartGame();
+        virtual void keypadButtonReleased(int button);
+        virtual void hitMe();
+        virtual void computerTurn();
+        virtual void keyTone(int button);
+
+
 
         void initPixels();
 

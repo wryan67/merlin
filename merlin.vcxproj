@@ -105,6 +105,7 @@
     <Media Include="wav\humanmove.wav" />
     <Media Include="wav\newgame.wav" />
     <Media Include="wav\samegame.wav" />
+    <Media Include="wav\youlose.wav" />
     <Media Include="wav\yourmove.wav" />
   </ItemGroup>
   <ItemGroup>

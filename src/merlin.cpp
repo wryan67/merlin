@@ -88,7 +88,19 @@ void newGameActivation(MCP23x17_GPIO gpio, int value) {
     startGame(0);
 }
 
+void computerTurnActivation(MCP23x17_GPIO gpio, int value) {
+    if (value != 0) {
+        return;
+    }
+    games[currentGame]->computerTurn();
+}
 
+void hitMeActivation(MCP23x17_GPIO gpio, int value) {
+    if (value != 0) {
+        return;
+    }
+    games[currentGame]->hitMe();
+}
 
 int envGetInteger(const char* var, const char* format) {
     if (!var) {
@@ -167,6 +179,10 @@ bool setup() {
 
     mcp23x17_setPinInputMode(sameGameButton, TRUE, sameGameActivation);
     mcp23x17_setPinInputMode(newGameButton,  TRUE, newGameActivation);
+
+    mcp23x17_setPinInputMode(computerTurnButton, TRUE, computerTurnActivation);
+    mcp23x17_setPinInputMode(hitMeButton, TRUE, hitMeActivation);
+
 
     return true;
 }

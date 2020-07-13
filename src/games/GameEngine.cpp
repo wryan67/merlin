@@ -28,6 +28,8 @@ namespace Games {
         pixelMap[9] = 8;
         pixelMap[10] = 7;
 
+        globalSoundCardHandle = openSoundCard(getenv("AUDIODEV"));
+
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
             keypadSoundHandle[i] = openSoundCard(getenv("AUDIODEV"));
         }
@@ -79,12 +81,30 @@ namespace Games {
         system(cmd);
     }
 
+    void GameEngine::playFailed() {
+        printf("player lost!\n");
+        char cmd[256];
+        sprintf(cmd, "play %s/projects/merlin/wav/youlose.wav 2> /dev/null &", getenv("HOME"));
+        system(cmd);
+    }
+
+
+
+    void GameEngine::playWav(const char *filename) {
+        char cmd[256];
+        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null &", getenv("HOME"), filename);
+        system(cmd);
+    }
+
+
     void* buttonTone(float freq, wavHeaderType *wavHeader, snd_pcm_t* soundCardHandle) {
         playTone(soundCardHandle, freq, .45, wavHeader);
     }
 
+    void GameEngine::keyTone(int button) {
+        new thread(buttonTone, noteHz[button], &wavHeader, keypadSoundHandle[button]);
+    }
     
-
 
     void GameEngine::initPixels() {
         for (int c=0;c<256;++c) {
@@ -125,12 +145,18 @@ namespace Games {
         fprintf(stderr, "keypad button released not defined: %s\n", gameName);
     }
 
+    void GameEngine::hitMe() {
+    }
+
+    void GameEngine::computerTurn() {
+    }
+
 
     void GameEngine::keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
-        printf("game engine button activation isActive=%d\n",isActive);
+        if (debug) printf("game engine button activation isActive=%d\n",isActive);
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
             if (gpio == keypadButton[i]) {
-                printf("keypad key=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio) + 'A', mcp23x17_getPin(gpio), value);
+                if (debug) printf("keypad key=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio) + 'A', mcp23x17_getPin(gpio), value);
                 if (value == 0) {
                     if (isActive) {
                         setPixelColor(i, neopixel_wheel(RED));
@@ -138,7 +164,7 @@ namespace Games {
                     }
 
                     if (i < maxNotes && keyTonesAudible[i]) {
-                        new thread(buttonTone, noteHz[i], &wavHeader, keypadSoundHandle[i]);
+                        keyTone(i);
                     }
                 } else {
                     if (isActive) {

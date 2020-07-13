@@ -19,7 +19,7 @@ namespace Games {
     }
 
     void MagicSquare::restartGame() {
-        fprintf(stderr, "Magic Square\n");
+        fprintf(stderr, "%s\n", gameName);
 
         randomizeBoard();
         isActive = true;

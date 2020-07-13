@@ -1,7 +1,6 @@
 #include "Common.h"
 #include <pthread.h>
 
-
 pthread_t threadCreate(void* (*method)(void*), const char* description, void* args) {
     pthread_t threadId;
 
