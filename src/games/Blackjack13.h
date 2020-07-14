@@ -8,16 +8,15 @@ namespace Games {
         vector<int> dealerCards;
         vector<int> deckCards;
 
-        void printHand(const char* message, vector<int> cards);
 
 
     protected: 
         void keypadButtonReleased(int button);
         void restartGame();
-        int dealFromDeck(vector<int>& hand, bool audiable);
+        int  dealFromDeck(vector<int>& hand, bool audiable);
         void hitMe();
         void computerTurn();
-        int computeScore(vector<int>& cards);
+        int  computeScore(vector<int>& cards);
 
     public:
         Blackjack13();

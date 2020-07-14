@@ -44,26 +44,6 @@ namespace Games {
     }
 
 
-    void GameEngine::printVector(const char* message, vector<int> &cards) {
-        bool first = true;
-        printf("%s: ", message); 
-        for (int i : cards) {
-            if (!first) {
-                printf(",");
-            } else {
-                first = false;
-            }
-            printf("%d", i);
-        }   
-        printf("\n");
-    }
-
-    /*
-    bool GameEngine::vectorContains(vector<int>& haystack, int needle) {
-        return (std::find(haystack.begin(), haystack.end(), needle) != haystack.end());
-    }
-    */
-
     void GameEngine::announceGame() {
         clearBoard();
         playWav(gameWav, true);
@@ -210,6 +190,8 @@ namespace Games {
             }
         }
     }
+    void GameEngine::printVector(const char* message, vector<int>& cards) {
 
+    }
 };
 

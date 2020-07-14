@@ -93,6 +93,8 @@ namespace Games {
         virtual void hitMe();
         virtual void keypadButtonActivation(MCP23x17_GPIO gpio, int value);
 
+        void printVector(const char* message, vector<int> &cards);
+
 
         bool isActive;
 

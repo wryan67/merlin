@@ -38,14 +38,14 @@ namespace Games {
 
         random_shuffle(deckCards.begin(), deckCards.end());
 
-        printHand("deck", deckCards);
+        printVector("deck", deckCards);
 
         dealFromDeck(playerCards, false);
         dealFromDeck(dealerCards, false);
 
-        printHand("deck", deckCards);
-        printHand("player", playerCards);
-        printHand("dealer", dealerCards);
+        printVector("deck", deckCards);
+        printVector("player", playerCards);
+        printVector("dealer", dealerCards);
 
         render();
         isActive = true;
@@ -61,24 +61,9 @@ namespace Games {
             playTone(globalSoundCardHandle, noteHz[card], .333, &wavHeader);
         }
 
-
         return card;
     }
 
-    void Blackjack13::printHand(const char* message, vector<int> cards) {
-        bool first = true;
-        printf("%s: ",message);
-        for (int i : cards) {
-            if (!first) {
-                printf(",");
-            }
-            else {
-                first = false;
-            }
-            printf("%d", i);
-        }   printf("\n");
-
-    }
 
     void Blackjack13::keypadButtonReleased(int button) {
         if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
