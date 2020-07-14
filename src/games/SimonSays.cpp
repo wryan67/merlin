@@ -50,8 +50,7 @@ namespace Games {
         for (int i : computerSequence) {
             if (!first) {
                 printf(",");
-            }
-            else {
+            } else {
                 first = false;
             }
             printf("%d", i);
@@ -104,7 +103,7 @@ namespace Games {
                 isActive = true;
                 return;
             }
-            setPixelColor(i, RED);
+            setPixelColor(i, keyFlashColor);
             render();
             playTone(globalSoundCardHandle, noteHz[i], .333, &wavHeader);
             usleep(1000);

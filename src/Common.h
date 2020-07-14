@@ -14,9 +14,9 @@
 #define maxNotes 11
 
 #define OFF       0
-#define RED      88
-#define GREEN   248  
-#define BLUE    168
+//#define RED      88
+//#define GREEN   248  
+//#define BLUE    168
 #define CYAN    216 
 #endif
 

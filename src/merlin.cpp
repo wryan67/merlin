@@ -8,9 +8,9 @@
 #include "TicTacToe.h"
 #include "Echo.h"
 #include "SimonSays.h"
-//#include "Blackjack13.h"
+#include "Blackjack13.h"
 #include "MagicSquare.h"
-//#include "CodeBreaker.h"
+#include "CodeBreaker.h"
 
 
 
@@ -48,9 +48,9 @@ NewGame        game0;
 TicTacToe      game1;
 Echo           game2;
 SimonSays      game3;
-MagicSquare    game4;
+Blackjack13    game4;
 MagicSquare    game5;
-MagicSquare    game6;
+CodeBreaker    game6;
 
 GameEngine* games[7] = {
     &game0,

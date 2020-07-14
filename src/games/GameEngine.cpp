@@ -150,15 +150,6 @@ namespace Games {
 
 
 
-    void GameEngine::swapState(int i) {
-        if (pixelState[i] == 1) {
-            pixelState[i] = 0;
-            pixelColor[pixelMap[i]] = neopixel_wheel(BLUE);
-        } else {
-            pixelState[i] = 1;
-            pixelColor[pixelMap[i]] = neopixel_wheel(GREEN);
-        }
-    }
 
 
 
@@ -184,7 +175,7 @@ namespace Games {
                 if (debug) printf("keypad key=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio) + 'A', mcp23x17_getPin(gpio), value);
                 if (value == 0) {
                     if (isActive) {
-                        setPixelColor(i, RED);
+                        setPixelColor(i, keyFlashColor);
                         render();
                     }
 

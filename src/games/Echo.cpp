@@ -41,7 +41,7 @@ namespace Games {
                 isActive = true;
                 return;
             }
-            setPixelColor(i, RED);
+            setPixelColor(i, keyFlashColor);
             render();
             playTone(globalSoundCardHandle, noteHz[i], .333, &wavHeader);
             usleep(1000);

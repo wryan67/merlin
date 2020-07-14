@@ -10,7 +10,7 @@ namespace Games {
         pixelColor[pixelMap[0]] = OFF;
         for (int i = 1; i <= 9; ++i) {
             pixelState[i] = random(0, 1);
-            pixelColor[pixelMap[i]] = (pixelState[i] == 0) ? neopixel_wheel(BLUE) : neopixel_wheel(GREEN);
+            setPixelColor(i, (pixelState[i] == 0) ? computerColor : playerColor);
         }
         pixelColor[pixelMap[10]] = OFF;
         render();
@@ -27,6 +27,18 @@ namespace Games {
         if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
         swapKey(button);
     }
+
+    void MagicSquare::swapState(int i) {
+        if (pixelState[i] == 1) {
+            pixelState[i] = 0;
+            setPixelColor(i, computerColor);
+        }
+        else {
+            pixelState[i] = 1;
+            setPixelColor(i, playerColor);
+        }
+    }
+
 
     void MagicSquare::swapKey(int i) {
         if (debug) printf("Magic Square: keypressed=%d\n",i);

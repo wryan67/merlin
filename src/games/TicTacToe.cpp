@@ -16,7 +16,7 @@ namespace Games {
         pixelColor[pixelMap[0]] = OFF;
         for (int i = 1; i <= 9; ++i) {
             pixelState[i] = EMPTY;
-            pixelColor[pixelMap[i]] = OFF; // (pixelState[i] == 0) ? neopixel_wheel(BLUE) : neopixel_wheel(GREEN);
+            pixelColor[pixelMap[i]] = OFF;
         }
         pixelColor[pixelMap[10]] = OFF;
         render();
@@ -93,7 +93,7 @@ namespace Games {
 
     void TicTacToe::computerMovesHere(int move) {
         pixelState[move] = COMPUTER;
-        pixelColor[pixelMap[move]] = neopixel_wheel(BLUE);
+        setPixelColor(move, computerColor);
         render();
         playWav("computermove.wav", true);
         isActive = checkGameStatus();
@@ -191,14 +191,14 @@ namespace Games {
         }
         if (pixelState[button] != 0) {
             playBlockedSound();
-            pixelColor[pixelMap[button]] = (pixelState[button] == 1) ? neopixel_wheel(GREEN) : neopixel_wheel(BLUE);;
+            setPixelColor(button, (pixelState[button] == 1) ? playerColor : computerColor);
             render();
             isActive = true;
             return;
         }
 
         pixelState[button] = HUMAN;
-        pixelColor[pixelMap[button]] = neopixel_wheel(GREEN);
+        setPixelColor(button, playerColor);
         render();
         keyTone(button);
 
@@ -206,7 +206,6 @@ namespace Games {
         if (isActive) {
             isActive = false;
             usleep(600 * 1000);
-//            playWav("waiting.wav", false);
             isActive = true;
             computerTurn();
         }

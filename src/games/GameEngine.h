@@ -31,6 +31,9 @@ namespace Games {
         snd_pcm_t* globalSoundCardHandle;
         int sampleRate = 48000;
 
+        int keyFlashColor = 88;
+        int playerColor = 248;
+        int computerColor = 168;
 
         bool keyTonesAudible[MERLIN_LIGHTS] = {
 //          0     1     2     3     4     5     6     7     8     9     10
@@ -65,7 +68,6 @@ namespace Games {
 
         void initWavHeader();
         void render();
-        void swapState(int i);
         void playAchivement();
         void playFailed();
         void playWav(const char* filename, bool background);
@@ -74,7 +76,7 @@ namespace Games {
         const char* gameName;
         const char* gameWav;
 
-        void setPixelColor(int button, int color);
+        void setPixelColor(int button, int wheelColor);
 
         virtual void keyTone(int button);
         virtual void keypadButtonReleased(int button);
