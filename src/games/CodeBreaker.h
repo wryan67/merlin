@@ -5,7 +5,7 @@ namespace Games {
     class CodeBreaker : public GameEngine {
     private:
         vector<int> secrectCode;
-        vector<int> playerGuess;
+        vector<int> playerGuesses;
         unordered_map<int, int> displayGuesses;
 
     protected: 
@@ -14,6 +14,7 @@ namespace Games {
         void render();
         void generateCode(int codeLength);
         int  codeLength();
+        bool vectorContains(vector<int> haystack, int needle);
 
     public:
         CodeBreaker();
@@ -21,4 +22,3 @@ namespace Games {
         void announceSameGame();
     };
 }
-
