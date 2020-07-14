@@ -9,6 +9,8 @@ namespace Games {
 
     public:
         CodeBreaker();
+        void announceGame();
+        void announceSameGame();
     };
 }
 

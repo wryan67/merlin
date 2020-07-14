@@ -82,7 +82,7 @@ namespace Games {
 
     void Blackjack13::keypadButtonReleased(int button) {
         if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
-
+        render();
     }
 
     void Blackjack13::hitMe() {
@@ -117,6 +117,8 @@ namespace Games {
         if (dealerScore > 13) {
             isActive = false;
             playWav("achievement-00.wav", true);
+            delay(1000);
+            playWav("playerwins.wav", true);
             return;
         }
 

@@ -109,6 +109,7 @@
     <Media Include="wav\echo.wav" />
     <Media Include="wav\phone_full.wav" />
     <Media Include="wav\playerbusted.wav" />
+    <Media Include="wav\playerwins.wav" />
     <Media Include="wav\tictactoe.wav" />
     <Media Include="wav\musicmachine.wav" />
     <Media Include="wav\simonsays.wav" />

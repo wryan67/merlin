@@ -5,7 +5,15 @@ namespace Games {
         gameName = "Code Breaker";
         gameWav = "codebreaker.wav";
     }
+    void CodeBreaker::announceGame() {
+        clearBoard();
+        playWav(gameWav, false);
+    }
 
+    void CodeBreaker::announceSameGame() {
+        clearBoard();
+        playWav("samegame.wav", false);
+    }
 
     void CodeBreaker::restartGame() {
         printf("%s\n", gameName);
