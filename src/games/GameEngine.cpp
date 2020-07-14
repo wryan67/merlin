@@ -36,12 +36,22 @@ namespace Games {
         gameName = "undefined game name";
         gameWav  = "undefined";
     }
+    void GameEngine::clearBoard() {
+        for (int i = 0; i <= 10; ++i) {
+            setPixelColor(i, -1);
+        }
+        render();
+    }
 
 
     void GameEngine::announceGame() {
-        char cmd[256];
-        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null &", getenv("HOME"), gameWav);
-        system(cmd);
+        clearBoard();
+        playWav(gameWav, true);
+    }
+
+    void GameEngine::announceSameGame() {
+        clearBoard();
+        playWav("samegame.wav", true);
     }
 
     void GameEngine::render() {
@@ -88,7 +98,7 @@ namespace Games {
         system(cmd);
     }
 
-    void GameEngine::setPixel(int button, int wheelColor) {
+    void GameEngine::setPixelColor(int button, int wheelColor) {
         if (wheelColor < 0 || wheelColor>255) {
             pixelColor[pixelMap[button]] = OFF;
         } else {
@@ -114,6 +124,7 @@ namespace Games {
     void GameEngine::interrupt() {
         printf("game interrupt\n");
         interruptFlag = true;
+        delay(500);
     }
     
 
@@ -130,6 +141,12 @@ namespace Games {
         }
     }
 
+    void GameEngine::eSpeak(char *message) {
+        char cmd[1024];
+        sprintf(cmd, "espeak --stdout %c%s%c | play -q - >/dev/null 2>&1", 39, message, 39);
+        system(cmd);
+    }
+
 
 
 
@@ -144,9 +161,6 @@ namespace Games {
     }
 
 
-    void GameEngine::setPixelColor(int button, int color) {
-        pixelColor[pixelMap[button]] = color;
-    }
 
     void GameEngine::restartGame() {
         fprintf(stderr, "restartGame not defined: %s\n", gameName);
@@ -170,7 +184,7 @@ namespace Games {
                 if (debug) printf("keypad key=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio) + 'A', mcp23x17_getPin(gpio), value);
                 if (value == 0) {
                     if (isActive) {
-                        setPixelColor(i, neopixel_wheel(RED));
+                        setPixelColor(i, RED);
                         render();
                     }
 
@@ -179,7 +193,6 @@ namespace Games {
                     }
                 } else {
                     if (isActive) {
-                        setPixelColor(i, pixelColor[pixelMap[i]]);
                         keypadButtonReleased(i);
                     }
                 }

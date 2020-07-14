@@ -3,7 +3,16 @@
 #include <wiringPi.h>
 #include <neopixel.h>
 
-#include "games/AllGames.h"
+#include "NewGame.h"
+
+#include "TicTacToe.h"
+#include "Echo.h"
+#include "SimonSays.h"
+//#include "Blackjack13.h"
+#include "MagicSquare.h"
+//#include "CodeBreaker.h"
+
+
 
 using namespace Games;
 
@@ -38,7 +47,7 @@ int currentGame=0;
 NewGame        game0;
 TicTacToe      game1;
 Echo           game2;
-MagicSquare    game3;
+SimonSays      game3;
 MagicSquare    game4;
 MagicSquare    game5;
 MagicSquare    game6;
@@ -71,8 +80,8 @@ void sameGameActivation(MCP23x17_GPIO gpio, int value) {
     }
     char cmd[256];
     printf("SameGame Button pressed\n");
-    sprintf(cmd,"play %s/projects/merlin/wav/samegame.wav 2> /dev/null &",getenv("HOME"));
-    system(cmd);
+
+    games[currentGame]->announceSameGame();
     games[currentGame]->restartGame();
 }
 

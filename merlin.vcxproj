@@ -69,6 +69,7 @@
     <ClCompile Include="src\games\GameEngine.cpp" />
     <ClCompile Include="src\games\MagicSquare.cpp" />
     <ClCompile Include="src\games\Echo.cpp" />
+    <ClCompile Include="src\games\SimonSays.cpp" />
     <ClCompile Include="src\games\TicTacToe.cpp" />
     <ClCompile Include="src\merlin.cpp" />
     <ClCompile Include="src\games\NewGame.cpp" />
@@ -76,7 +77,6 @@
     <ClCompile Include="src\audio\tones.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\games\AllGames.h" />
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\games\GameEngine.h" />
     <ClInclude Include="src\games\MagicSquare.h" />
@@ -84,6 +84,7 @@
     <ClInclude Include="src\games\NewGame.h" />
     <ClInclude Include="src\audio\Sound.h" />
     <ClInclude Include="src\audio\tones.h" />
+    <ClInclude Include="src\games\SimonSays.h" />
     <ClInclude Include="src\games\TicTacToe.h" />
   </ItemGroup>
   <ItemGroup>
@@ -96,8 +97,10 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="wav\achievement-00.wav" />
+    <Media Include="wav\buzzer.wav" />
     <Media Include="wav\catwon.wav" />
     <Media Include="wav\computermove.wav" />
+    <Media Include="wav\correct.wav" />
     <Media Include="wav\echo.wav" />
     <Media Include="wav\phone_full.wav" />
     <Media Include="wav\tictactoe.wav" />
@@ -121,7 +124,11 @@
     <Text Include="songs\yankee doodle.txt" />
     <Text Include="wav\games.txt" />
   </ItemGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>src/games;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

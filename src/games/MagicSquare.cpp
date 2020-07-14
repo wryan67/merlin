@@ -4,8 +4,6 @@ namespace Games {
     MagicSquare::MagicSquare() {
         gameName = "Magic Square";
         gameWav = "magicsquare.wav";
-
-
     }
 
     void MagicSquare::randomizeBoard() {

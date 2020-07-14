@@ -56,6 +56,7 @@ namespace Games {
         };
 
         GameEngine();
+        void clearBoard();
         virtual ~GameEngine();
 
         int pixelColor[MERLIN_LIGHTS];   // color of each pixel
@@ -67,30 +68,31 @@ namespace Games {
         void swapState(int i);
         void playAchivement();
         void playFailed();
-        void setPixel(int button, int wheelColor);
         void playWav(const char* filename, bool background);
 
 
         const char* gameName;
         const char* gameWav;
 
+        void setPixelColor(int button, int color);
+
+        virtual void keyTone(int button);
+        virtual void keypadButtonReleased(int button);
 
     public:
-        virtual void announceGame();
-        virtual void restartGame();
-        virtual void keypadButtonReleased(int button);
-        virtual void hitMe();
-        virtual void computerTurn();
-        virtual void keyTone(int button);
-        virtual void interrupt();
-
-
         void initPixels();
+        virtual void eSpeak(char *message);
+
+        virtual void announceGame();
+        virtual void announceSameGame();
+        virtual void restartGame();
+        virtual void interrupt();
+        virtual void computerTurn();
+        virtual void hitMe();
+        virtual void keypadButtonActivation(MCP23x17_GPIO gpio, int value);
+
 
         bool isActive;
 
-        void setPixelColor(int button, int color);
-
-        void keypadButtonActivation(MCP23x17_GPIO gpio, int value);
     };
 }

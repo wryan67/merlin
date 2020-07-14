@@ -11,7 +11,6 @@ namespace Games {
         void keypadButtonReleased(int button);
         void computerTurn();
         void restartGame();
-        void clearBoard();
 
     public:
         Echo();

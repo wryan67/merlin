@@ -6,12 +6,7 @@ namespace Games {
         gameWav = "echo.wav";
     }
 
-    void Echo::clearBoard() {
-        for (int i = 0; i < MERLIN_LIGHTS; ++i) {
-            setPixel(i, -1);
-        }
-        render();
-    }
+
 
     void Echo::restartGame() {
         printf("%s\n", gameName);
@@ -23,7 +18,7 @@ namespace Games {
 
     void Echo::keypadButtonReleased(int button) {
         if (debug) fprintf(stderr, "Echo -- key pressed:  %d\n", button);
-        setPixel(button, -1);
+        setPixelColor(button, -1);
         render();
         song.push_back(button);
     }
@@ -42,13 +37,15 @@ namespace Games {
         isPlaying = true;
         for (int i : song) {
             if (interruptFlag || isActive) {
+                isPlaying = false;
+                isActive = true;
                 return;
             }
-            setPixel(i, RED);
+            setPixelColor(i, RED);
             render();
             playTone(globalSoundCardHandle, noteHz[i], .333, &wavHeader);
             usleep(1000);
-            setPixel(i, -1);
+            setPixelColor(i, -1);
         }
 
         render();
