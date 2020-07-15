@@ -104,13 +104,12 @@ namespace Games {
 
         bool correct = true;
         for (int i = 0; i < codeLength(); ++i) {
-            int playerGuess = playerGuesses[i];
-            if (playerGuess == secrectCode[i]) {
-                displayGuesses[playerGuess] = playerColor;
+            if (playerGuesses[i] == secrectCode[i]) {
+                displayGuesses[i] = playerColor;
             } else {
                 correct = false;
-                if (vectorContains(secrectCode, playerGuess)) {
-                    displayGuesses[playerGuess] = computerColor;
+                if (vectorContains(secrectCode, i)) {
+                    displayGuesses[i] = computerColor;
                 }
             }
         }
@@ -120,7 +119,7 @@ namespace Games {
             isActive = false;
             playWav("achievement-00.wav", true);
         } else {
-            playWav("buzzer.wav", true);
+            playWav("incorrect.wav", true);
             playerGuesses.clear();
         }
     }
