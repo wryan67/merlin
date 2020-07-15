@@ -85,6 +85,8 @@ namespace Games {
         void initPixels();
         virtual void eSpeak(char *message);
 
+        bool vectorContains(vector<int> haystack, int needle);
+
         virtual void announceGame();
         virtual void announceSameGame();
         virtual void restartGame();

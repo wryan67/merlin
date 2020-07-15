@@ -44,19 +44,6 @@ namespace Games {
     }
 
 
-    void GameEngine::printVector(const char* message, vector<int> &cards) {
-        bool first = true;
-        printf("%s: ", message); 
-        for (int i : cards) {
-            if (!first) {
-                printf(",");
-            } else {
-                first = false;
-            }
-            printf("%d", i);
-        }   
-        printf("\n");
-    }
 
     /*
     bool GameEngine::vectorContains(vector<int>& haystack, int needle) {
@@ -169,10 +156,6 @@ namespace Games {
 
 
 
-
-
-
-
     void GameEngine::restartGame() {
         fprintf(stderr, "restartGame not defined: %s\n", gameName);
     }
@@ -210,6 +193,33 @@ namespace Games {
             }
         }
     }
+
+
+    bool GameEngine::vectorContains(vector<int> haystack, int needle) {
+        for (int i : haystack) {
+            if (i == needle) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    void GameEngine::printVector(const char* message, vector<int>& cards) {
+        bool first = true;
+        printf("%s: ", message);
+        for (int i : cards) {
+            if (!first) {
+                printf(",");
+            }
+            else {
+                first = false;
+            }
+            printf("%d", i);
+        }
+        printf("\n");
+    }
+
 
 };
 

@@ -10,11 +10,11 @@ namespace Games {
 
     protected: 
         void keypadButtonReleased(int button);
+        void hitMe();
         void restartGame();
         void render();
         void generateCode(int codeLength);
         int  codeLength();
-        bool vectorContains(vector<int> haystack, int needle);
 
     public:
         CodeBreaker();

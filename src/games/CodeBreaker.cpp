@@ -72,14 +72,7 @@ namespace Games {
 
     }
 
-    bool CodeBreaker::vectorContains(vector<int> haystack, int needle) {
-        for (int i : haystack) {
-            if (i == needle) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     void CodeBreaker::keypadButtonReleased(int button) {
         if (debug) fprintf(stderr, "Code Breaker -- key pressed:  %d\n", button);
@@ -125,6 +118,11 @@ namespace Games {
             playWav("buzzer.wav", true);
             playerGuesses.clear();
         }
+    }
+
+    void CodeBreaker::hitMe() {
+        playerGuesses.clear();
+        playWav("computermove.wav",true);
     }
 
 
