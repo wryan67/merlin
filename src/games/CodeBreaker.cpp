@@ -97,7 +97,9 @@ namespace Games {
             return;
         }
 
-        playerGuesses.push_back(button);
+        if (!vectorContains(playerGuesses, button)) {
+            playerGuesses.push_back(button);
+        }
         if (playerGuesses.size() < codeLength()) {
             return;
         }
