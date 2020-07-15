@@ -99,12 +99,6 @@ namespace Games {
         isActive = checkGameStatus();
     }
 
-    void TicTacToe::playBlockedSound() {  
-        playTone(globalSoundCardHandle, 123.47, 0.25, &wavHeader);
-        usleep(50 * 1000);
-        playTone(globalSoundCardHandle, 123.47, 0.55, &wavHeader);
-    }
-
     void TicTacToe::checkGameStatus(bool& gameOver, int& winner) {
         gameOver = false;
         winner = CAT;
@@ -183,14 +177,14 @@ namespace Games {
     void TicTacToe::keypadButtonReleased(int button) {  // human move
         isActive = false;
         if (button < 1 || button>9) {
-            playBlockedSound();
+            playWav("buzzer.wav",true);
             pixelColor[pixelMap[button]] = 0;
             render();
             isActive = true;
             return;
         }
         if (pixelState[button] != 0) {
-            playBlockedSound();
+            playWav("buzzer.wav", true);
             setPixelColor(button, (pixelState[button] == 1) ? playerColor : computerColor);
             render();
             isActive = true;

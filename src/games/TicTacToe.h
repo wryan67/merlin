@@ -15,7 +15,6 @@ namespace Games {
         void restartGame();
         void computerTurn();
         void computerMovesHere(int move);
-        void playBlockedSound();
 
         void checkGameStatus(bool& gameOver, int& winner);
 
