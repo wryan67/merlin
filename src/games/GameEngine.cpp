@@ -4,6 +4,11 @@
 using namespace std;
 
 namespace Games {
+    int      GameEngine::brightness=16;
+    int      GameEngine::keyFlashColor=88;
+    int      GameEngine::playerColor=248;
+    int      GameEngine::computerColor=168;
+
 
 
     GameEngine::~GameEngine() {}
@@ -106,11 +111,17 @@ namespace Games {
     }
 
     void GameEngine::setPixelColor(int button, int wheelColor) {
-        if (wheelColor < 0 || wheelColor>255) {
+        if (wheelColor < 0) {
             pixelColor[pixelMap[button]] = OFF;
+        } else if (wheelColor>255) {
+            pixelColor[pixelMap[button]] = 0xFFFFFFFF;  // White
         } else {
             pixelColor[pixelMap[button]] = neopixel_wheel(wheelColor);
         }
+    }
+
+    int GameEngine::getPixelColor(int button) {
+        return pixelColor[pixelMap[button]];
     }
 
     void GameEngine::playWav(const char *filename, bool background) {
@@ -136,6 +147,8 @@ namespace Games {
     
 
     void GameEngine::initPixels() {
+        neopixel_setBrightness(brightness);
+
         for (int c=0;c<256;++c) {
             for (int i = 0; i <= 10; ++i) {
                 pixelColor[pixelMap[i]] = neopixel_wheel(c);
@@ -150,7 +163,7 @@ namespace Games {
 
     void GameEngine::eSpeak(char *message) {
         char cmd[1024];
-        sprintf(cmd, "espeak --stdout %c%s%c | play -q - >/dev/null 2>&1", 39, message, 39);
+        sprintf(cmd, "espeak --stdout %c%s%c 2>/dev/null| play -q - >/dev/null 2>&1", 39, message, 39);
         system(cmd);
     }
 
@@ -175,7 +188,7 @@ namespace Games {
         if (debug) printf("game engine button activation isActive=%d\n",isActive);
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
             if (gpio == keypadButton[i]) {
-                if (debug) printf("keypad key=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio) + 'A', mcp23x17_getPin(gpio), value);
+                if (debug) printf("keypad value=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio) + 'A', mcp23x17_getPin(gpio), value);
                 if (value == 0) {
                     if (isActive) {
                         setPixelColor(i, keyFlashColor);
@@ -203,6 +216,19 @@ namespace Games {
         }
         return false;
     }
+
+    bool GameEngine::mapContainsValue(unordered_map<int, int> &map, int value) {
+
+        for (pair<int, int> e : map) {
+            if (e.second == value) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 
 
     void GameEngine::printVector(const char* message, vector<int>& cards) {

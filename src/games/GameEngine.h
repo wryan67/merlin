@@ -3,7 +3,7 @@
 #include <neopixel.h>
 #include <unordered_map>
 #include <vector>
-
+#include <neopixel.h>
 #include <alsa/asoundlib.h>
 #include "../audio/tones.h"
 
@@ -16,13 +16,10 @@ using namespace std;
 
 
 namespace Games {
-
-#define EMPTY     0
-#define HUMAN     1
-#define COMPUTER  2
-#define CAT       3
-
+    // global
     void* buttonTone(float freq, wavHeaderType* wavHeader, snd_pcm_t* soundCardHandle);
+
+
 
     class GameEngine {
     protected:
@@ -31,9 +28,7 @@ namespace Games {
         snd_pcm_t* globalSoundCardHandle;
         int sampleRate = 48000;
 
-        int keyFlashColor = 88;
-        int playerColor = 248;
-        int computerColor = 168;
+
 
         bool keyTonesAudible[MERLIN_LIGHTS] = {
 //          0     1     2     3     4     5     6     7     8     9     10
@@ -62,8 +57,8 @@ namespace Games {
         void clearBoard();
         virtual ~GameEngine();
 
-        int pixelColor[MERLIN_LIGHTS];   // color of each pixel
         int pixelState[MERLIN_LIGHTS];   // state of keypad pixel
+        uint32_t pixelColor[MERLIN_LIGHTS];   // color of each pixel
         unordered_map<int, int> pixelMap;
 
         void initWavHeader();
@@ -78,14 +73,19 @@ namespace Games {
 
         void setPixelColor(int button, int wheelColor);
 
+        int getPixelColor(int button);
+
         virtual void keyTone(int button);
         virtual void keypadButtonReleased(int button);
 
     public:
+        static int  brightness;
+        static int  keyFlashColor;
+        static int  playerColor;
+        static int  computerColor;
+
         void initPixels();
         virtual void eSpeak(char *message);
-
-        bool vectorContains(vector<int> haystack, int needle);
 
         virtual void announceGame();
         virtual void announceSameGame();
@@ -96,9 +96,14 @@ namespace Games {
         virtual void keypadButtonActivation(MCP23x17_GPIO gpio, int value);
 
         void printVector(const char* message, vector<int> &cards);
+        bool vectorContains(vector<int> haystack, int needle);
 
+        bool mapContainsValue(unordered_map<int, int> &map, int value);
 
         bool isActive;
+
+
+
 
     };
 }

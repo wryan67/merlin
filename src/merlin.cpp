@@ -4,6 +4,7 @@
 #include <neopixel.h>
 
 #include "NewGame.h"
+#include "ColorSelector.h"
 
 #include "TicTacToe.h"
 #include "Echo.h"
@@ -17,7 +18,6 @@
 using namespace Games;
 
 
-int brightness = 10;
 
 int mcp23x17_x20_handle = -1;
 int mcp23x17_x20_address = 0x20;
@@ -51,8 +51,9 @@ SimonSays      game3;
 Blackjack13    game4;
 MagicSquare    game5;
 CodeBreaker    game6;
+ColorSelector  game10;
 
-GameEngine* games[7] = {
+GameEngine* games[11] = {
     &game0,
     &game1,
     &game2,
@@ -60,6 +61,10 @@ GameEngine* games[7] = {
     &game4,
     &game5,
     &game6,
+    &game0,
+    &game0,
+    &game0,
+    &game10
 };
 
 
@@ -211,7 +216,9 @@ bool commandLineOptions(int argc, char** argv) {
     while ((c = getopt(argc, argv, "b:")) != -1)
         switch (c) {
         case 'b':
+            int brightness;
             sscanf(optarg, "%d", &brightness);
+            GameEngine::brightness = brightness;
             break;
         case '?':
             if (optopt == 'b')
@@ -249,7 +256,6 @@ int main(int argc, char** argv) {
         return 2;
     }
 
-    neopixel_setBrightness(brightness);
 
     games[currentGame]->initPixels();
 

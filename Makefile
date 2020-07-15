@@ -1,29 +1,52 @@
-CFLAGS=-O2 -Wall -z now
-LIBS=-lm -lpthread -lasound -lwiringPi -lwiringPiMCP23x17rpi -lNeoPixelRPi
-#;wiringPiDev;wiringPiPca9685;;wiringPiADS1115rpi;wiringPiPCA9635rpi;
+##########################################################################
+# Makefile
+#
+# This software is a devLib extension to wiringPi <http://wiringpi.com/>
+# and enables it to control an LCD1602 or LCD2004 via a pcf8574 module
+# http://ww1.microchip.com/downloads/en/devicedoc/20001952c.pdf
+# 
+#
+# Copyright (c) 2019 Wade Ryan
+#
+# If you have questions or improvements email me at
+# wryan67@gmail.com
+#
+# This software is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# The given code is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Lesser General Public License for more details.
+#
+# You can view the contents of the licence at <http://www.gnu.org/licenses/>.
+##########################################################################
+# Sorry, I hate make and cmake, but at least I give you a 
+# make file interface, so you can use make like you're used to
+##########################################################################
 
-all: chmod merlin 
+all: compile
 
-DESTINATION=${HOME}/projects/merlin
-BIN=${DESTINATION}/bin/ARM/Debug/
+clean: chmod
+	@sudo ./build.sh clean
 
-merlin: merlin.cpp -lasound -lwiringPiMCP23x17rpi -lNeoPixelRPi tones.o
-	@echo compiling merlin
-	@rm -f bin/ARM/Debug/merlin.out
-	@g++ ${CFLAGS} -o merlin merlin.cpp tones.o ${LIBS}
-	@mkdir -p ${DESTINATION}/bin/ARM/Debug
-	@cp -rp wav      ${DESTINATION} 2> /dev/null
-	@cp -p merlin.sh ${DESTINATION} 2> /dev/null
-	@cp -p merlin    ${BIN}/merlin.out 2> /dev/null
-	@rm -f /usr/local/bin/merlin
-	@sudo ln -fs ${DESTINATION}/merlin.sh /usr/local/bin/merlin
+compile: chmod
+	@./build.sh compile
+	
+package: chmod
+	@./build.sh package
+	
+install: chmod
+	@sudo ./build.sh install
 
-#g++ -o merlin.out merlin.cpp -l"pthread" -l"wiringPi" -l"wiringPiDev" -l"wiringPiPca9685" -l"wiringPiMCP23x17rpi" -l"wiringPiADS1115rpi" -l"wiringPiPCA9635rpi" -l"NeoPixelRPi" -l"asound" -Wall -z now 
+exe: chmod
+	@./build.sh exe
 
-tones.o: tones.cpp -lasound 
-	@g++ -c -o tones.o  ${CFLAGS} tones.cpp
+remove: chmod
+	@sudo ./build.sh remove
 
-chmod:
-	@chmod 755 listSoundCards.sh merlin.sh
-clean:
-	@rm -rf merlin bin obj
+chmod: 
+	@sudo chmod 755 build.sh
+     

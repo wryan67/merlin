@@ -68,6 +68,7 @@
     <ClCompile Include="src\Common.cpp" />
     <ClCompile Include="src\games\Blackjack13.cpp" />
     <ClCompile Include="src\games\CodeBreaker.cpp" />
+    <ClCompile Include="src\games\ColorSelector.cpp" />
     <ClCompile Include="src\games\GameEngine.cpp" />
     <ClCompile Include="src\games\MagicSquare.cpp" />
     <ClCompile Include="src\games\Echo.cpp" />
@@ -82,6 +83,7 @@
     <ClInclude Include="src\Common.h" />
     <ClInclude Include="src\games\Blackjack13.h" />
     <ClInclude Include="src\games\CodeBreaker.h" />
+    <ClInclude Include="src\games\ColorSelector.h" />
     <ClInclude Include="src\games\GameEngine.h" />
     <ClInclude Include="src\games\MagicSquare.h" />
     <ClInclude Include="src\games\Echo.h" />
@@ -107,9 +109,11 @@
     <Media Include="wav\correct.wav" />
     <Media Include="wav\dealerwins.wav" />
     <Media Include="wav\echo.wav" />
+    <Media Include="wav\incorrect.wav" />
     <Media Include="wav\phone_full.wav" />
     <Media Include="wav\playerbusted.wav" />
     <Media Include="wav\playerwins.wav" />
+    <Media Include="wav\selectcolors.wav" />
     <Media Include="wav\tictactoe.wav" />
     <Media Include="wav\musicmachine.wav" />
     <Media Include="wav\simonsays.wav" />
