@@ -66,7 +66,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\audio\Tones.cpp" />
-    <ClCompile Include="src\Common.cpp" />
+    <ClCompile Include="src\audio\WavPlayer.cpp" />
+    <ClCompile Include="src\common\Common.cpp" />
     <ClCompile Include="src\games\Blackjack13.cpp" />
     <ClCompile Include="src\games\CodeBreaker.cpp" />
     <ClCompile Include="src\games\ColorSelector.cpp" />
@@ -80,8 +81,7 @@
     <ClCompile Include="src\audio\Sound.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\audio\Tones.h" />
-    <ClInclude Include="src\Common.h" />
+    <ClInclude Include="src\common\Common.h" />
     <ClInclude Include="src\games\Blackjack13.h" />
     <ClInclude Include="src\games\CodeBreaker.h" />
     <ClInclude Include="src\games\ColorSelector.h" />
@@ -138,7 +138,7 @@
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <AdditionalIncludeDirectories>src/games;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src/common;src/audio;src/games;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

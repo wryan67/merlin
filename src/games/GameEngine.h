@@ -5,10 +5,9 @@
 #include <vector>
 #include <neopixel.h>
 #include <alsa/asoundlib.h>
-#include "../audio/tones.h"
 
-
-#include "../Common.h"
+#include "Sound.h"
+#include "Common.h"
 
 using namespace std;
 
@@ -17,15 +16,12 @@ using namespace std;
 
 namespace Games {
     // global
-    void* buttonTone(float freq, wavHeaderType* wavHeader, snd_pcm_t* soundCardHandle);
-
-
+    void* buttonTone(float freq, wavFormat* wavForamt);
 
     class GameEngine {
     protected:
         bool interruptFlag;
-        wavHeaderType wavHeader;
-        snd_pcm_t* globalSoundCardHandle;
+        wavFormat wavForamt;
         int sampleRate = 48000;
 
 
@@ -61,7 +57,7 @@ namespace Games {
         uint32_t pixelColor[MERLIN_LIGHTS];   // color of each pixel
         unordered_map<int, int> pixelMap;
 
-        void initWavHeader();
+        void initWavFormat();
         void render();
         void playAchivement();
         void playFailed();

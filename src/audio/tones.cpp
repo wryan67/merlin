@@ -1,13 +1,12 @@
-#include "tones.h"
-#include <math.h>
+#include "Sound.h"
 
 void generate_sine(unsigned char* data, snd_pcm_format_t format,
-    wavHeaderType* wavHeader, snd_pcm_uframes_t offset,
+    wavFormat* wavForamt, snd_pcm_uframes_t offset,
     int count, double* _phase, float freq) {
 
     static double max_phase = 2. * M_PI;
     double phase = *_phase;
-    double step = max_phase * freq / (double)wavHeader->sampleRate;
+    double step = max_phase * freq / (double)wavForamt->sampleRate;
     int format_bits = snd_pcm_format_width(format);
     unsigned int maxval = (1 << (format_bits - 1)) - 1;
     int bps = format_bits / 8;  /* bytes per sample */
@@ -32,8 +31,8 @@ void generate_sine(unsigned char* data, snd_pcm_format_t format,
         }
         if (to_unsigned)
             res ^= 1U << (format_bits - 1);
-        for (int chn = 0; chn < wavHeader->channels; chn++) {
-            long wavIndex = k * wavHeader->bitsPerSample / 8 + chn * wavHeader->bitsPerSample / 8;
+        for (int chn = 0; chn < wavForamt->channels; chn++) {
+            long wavIndex = k * wavForamt->bitsPerSample / 8 + chn * wavForamt->bitsPerSample / 8;
             /* Generate data in native endian format */
             if (!big_endian) {
                 for (i = 0; i < bps; i++)
@@ -52,7 +51,7 @@ void generate_sine(unsigned char* data, snd_pcm_format_t format,
 }
 
 
-void sendHeader(snd_pcm_t* soundCardHandle, wavHeaderType* wavHeader) {
+void sendToneHeader(snd_pcm_t* soundCardHandle, wavFormat* wavForamt) {
     int err;
 
     snd_pcm_drop(soundCardHandle);
@@ -61,7 +60,7 @@ void sendHeader(snd_pcm_t* soundCardHandle, wavHeaderType* wavHeader) {
         SND_PCM_FORMAT_S16_LE,
         SND_PCM_ACCESS_RW_INTERLEAVED,
         1,  // channels
-        wavHeader->sampleRate,  // sps
+        wavForamt->sampleRate,  // sps
         0,  // software resample
         500000)) < 0) {   /* latency 0.5sec */
 
@@ -70,34 +69,37 @@ void sendHeader(snd_pcm_t* soundCardHandle, wavHeaderType* wavHeader) {
     }
 }
 
-void drainSound(snd_pcm_t* soundCardHandle) {
-    int err = snd_pcm_drain(soundCardHandle);
-    if (err < 0) {
-        fprintf(stderr, "snd_pcm_drain failed: %s\n", snd_strerror(err));
+void playTone(float freq, float duration, wavFormat* wavForamt) {
+    snd_pcm_t* handle = getSoundCardHandle();
+    if (handle == NULL) {
+        fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
     }
+    playTone(handle, freq, duration, wavForamt);
+    closeSoundCard(handle);
 }
 
-void playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavHeaderType* wavHeader) {
-    long dataSize = wavHeader->blockAlign * wavHeader->sampleRate * duration;
+
+void playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavFormat* wavForamt) {
+    long dataSize = wavForamt->blockAlign * wavForamt->sampleRate * duration;
 
     void* data = malloc(dataSize);
     memset(data, 0, dataSize);
 
-    chunkHeader chunkHeader;
-    strncpy(chunkHeader.chunkID, "data", 4);
-    chunkHeader.chunkSize = dataSize;
+    wavChunkHeader wavChunkHeader;
+    strncpy(wavChunkHeader.chunkID, "data", 4);
+    wavChunkHeader.chunkSize = dataSize;
 
 
-    long samples = wavHeader->sampleRate * duration;
+    long samples = wavForamt->sampleRate * duration;
     snd_pcm_format_t format = SND_PCM_FORMAT_S16_LE;
     double phase = 1.0;
     if (freq > 0) {
-        generate_sine((unsigned char*)data, format, wavHeader, 0, samples, &phase, freq);
+        generate_sine((unsigned char*)data, format, wavForamt, 0, samples, &phase, freq);
     }
 
-    sendHeader(soundCardHandle, wavHeader);
+    sendToneHeader(soundCardHandle, wavForamt);
 
-    int segmetSize = (wavHeader->bitsPerSample / 8) * wavHeader->channels;
+    int segmetSize = (wavForamt->bitsPerSample / 8) * wavForamt->channels;
 
     snd_pcm_sframes_t bytesWritten;
     bytesWritten = snd_pcm_writei(soundCardHandle, data, dataSize / segmetSize);
@@ -110,12 +112,7 @@ void playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavHeaderT
     if (bytesWritten > 0 && bytesWritten < dataSize / segmetSize) {
         fprintf(stderr, "data write error (expected %li, wrote %li)\n", dataSize, bytesWritten);
     }
-
-    drainSound(soundCardHandle);
-
-
     free(data);
 }
-
 
 

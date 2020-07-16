@@ -237,7 +237,7 @@ bool commandLineOptions(int argc, char** argv) {
 }
 
 void startGame(int newGame) {
-    printf("startig new game: %d\n", newGame);
+    printf("starting new game: %d\n", newGame);
 
     currentGame = newGame;
     games[currentGame]->announceGame();

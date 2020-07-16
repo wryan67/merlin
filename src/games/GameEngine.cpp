@@ -13,7 +13,7 @@ namespace Games {
 
     GameEngine::~GameEngine() {}
     GameEngine::GameEngine() {
-        initWavHeader();
+        initWavFormat();
 
         for (int i = 0; i < 11; ++i) {
             char name[32];
@@ -33,11 +33,6 @@ namespace Games {
         pixelMap[9] = 8;
         pixelMap[10] = 7;
 
-        globalSoundCardHandle = openSoundCard(getenv("AUDIODEV"));
-
-        for (int i = 0; i < MERLIN_LIGHTS; ++i) {
-            keypadSoundHandle[i] = openSoundCard(getenv("AUDIODEV"));
-        }
         gameName = "undefined game name";
         gameWav  = "undefined";
     }
@@ -80,34 +75,30 @@ namespace Games {
         neopixel_render();
     }
 
-    void GameEngine::initWavHeader() {
-        strncpy(wavHeader.chunkID, "RIFF", 4);
-        strncpy(wavHeader.format, "WAVE", 4);
-        strncpy(wavHeader.subChunk1ID, "fmt ", 4);
-        wavHeader.fileSize = 9;
-        wavHeader.subChunk1Size = 16;
-        wavHeader.audioFormat = 1;
-        wavHeader.channels = 1;
-        wavHeader.sampleRate = sampleRate;
-        wavHeader.bitsPerSample = 16;
-        wavHeader.blockAlign = wavHeader.bitsPerSample / 8;
-        wavHeader.byteRate = wavHeader.sampleRate * wavHeader.channels * wavHeader.blockAlign;
-
+    void GameEngine::initWavFormat() {
+        wavForamt.audioFormat = 1;
+        wavForamt.channels = 1;
+        wavForamt.sampleRate = sampleRate;
+        wavForamt.bitsPerSample = 16;
+        wavForamt.blockAlign = wavForamt.bitsPerSample / 8;
+        wavForamt.byteRate = wavForamt.sampleRate * wavForamt.channels * wavForamt.blockAlign;
     }
 
 
     void GameEngine::playAchivement() {
         printf("game achievement!\n");
-        char cmd[256];
-        sprintf(cmd, "play %s/projects/merlin/wav/achievement-00.wav 2> /dev/null &", getenv("HOME"));
-        system(cmd);
+//        char cmd[256];
+//        sprintf(cmd, "play %s/projects/merlin/wav/achievement-00.wav 2> /dev/null &", getenv("HOME"));
+//        system(cmd);
+        playWav("achievement-00.wav", true);
     }
 
     void GameEngine::playFailed() {
         printf("player lost!\n");
-        char cmd[256];
-        sprintf(cmd, "play %s/projects/merlin/wav/youlose.wav 2> /dev/null &", getenv("HOME"));
-        system(cmd);
+//        char cmd[256];
+//        sprintf(cmd, "play %s/projects/merlin/wav/youlose.wav 2> /dev/null &", getenv("HOME"));
+//        system(cmd);
+        playWav("youlose.wav", true);
     }
 
     void GameEngine::setPixelColor(int button, int wheelColor) {
@@ -125,18 +116,31 @@ namespace Games {
     }
 
     void GameEngine::playWav(const char *filename, bool background) {
-        char cmd[256];
-        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null %s", getenv("HOME"), filename, (background)?"&":"");
-        system(cmd);
+        char* path = (char*)malloc(512 + strlen(filename));
+        float volume = 1.0;
+        sprintf(path, "%s/projects/merlin/wav/%s", getenv("HOME"), filename);
+
+//        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null %s", getenv("HOME"), filename, (background)?"&":"");
+//        system(cmd);
+
+        if (background) {
+            volume = 2.0;
+            char _path = strlen(path);
+            new thread(playWavFile, path, volume);
+        } else {
+            volume = 1.0;
+            playWavFile(path, volume);
+        }
+
     }
 
 
-    void* buttonTone(float freq, wavHeaderType *wavHeader, snd_pcm_t* soundCardHandle) {
-        playTone(soundCardHandle, freq, .45, wavHeader);
+    void* buttonTone(float freq, wavFormat *wavFormat) {
+        playTone(freq, .45, wavFormat);
     }
 
     void GameEngine::keyTone(int button) {
-        new thread(buttonTone, noteHz[button], &wavHeader, keypadSoundHandle[button]);
+        new thread(buttonTone, noteHz[button], &wavForamt);
     }
 
     void GameEngine::interrupt() {

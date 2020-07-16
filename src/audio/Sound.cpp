@@ -1,5 +1,6 @@
 #include "Sound.h"
 
+
 snd_pcm_t* openSoundCard(const char* soundCardName) {
     int err;
 
@@ -15,4 +16,19 @@ snd_pcm_t* openSoundCard(const char* soundCardName) {
     }
 
     return soundCardHandle;
+}
+
+void drainSound(snd_pcm_t* soundCardHandle) {
+    int err = snd_pcm_drain(soundCardHandle);
+    if (err < 0) {
+        fprintf(stderr, "snd_pcm_drain failed: %s\n", snd_strerror(err));
+    }
+}
+
+void closeSoundCard(snd_pcm_t* soundCardHandle) {
+    drainSound(soundCardHandle);
+    int err = snd_pcm_close(soundCardHandle);
+    if (err < 0) {
+        fprintf(stderr, "snd_pcm_close failed: %s\n", snd_strerror(err));
+    }
 }

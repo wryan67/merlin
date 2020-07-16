@@ -105,7 +105,7 @@ namespace Games {
             }
             setPixelColor(i, keyFlashColor);
             render();
-            playTone(globalSoundCardHandle, noteHz[i], .333, &wavHeader);
+            playTone(noteHz[i], .333, &wavForamt);
             usleep(1000);
             setPixelColor(i, -1);
         }
