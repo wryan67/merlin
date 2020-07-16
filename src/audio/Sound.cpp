@@ -32,3 +32,55 @@ void closeSoundCard(snd_pcm_t* soundCardHandle) {
         fprintf(stderr, "snd_pcm_close failed: %s\n", snd_strerror(err));
     }
 }
+
+
+#include <vector>
+#include <mutex>
+#include <thread>
+
+using namespace std;
+
+vector<snd_pcm_t*> soundCardHandles;
+mutex soundPool;
+mutex soundPoolInit;
+bool  soundPoolRunning = false;
+
+#define minSoundPoolSize 10
+
+void soundCardPool() {
+
+    while (true) {
+        while (soundCardHandles.size() < minSoundPoolSize) {
+            soundPool.lock();
+            snd_pcm_t* handle = openSoundCard(getenv("AUDIODEV"));
+            soundCardHandles.push_back(handle);
+            soundPool.unlock();
+        }
+        usleep(2000);
+    }
+}
+
+snd_pcm_t* getSoundCardHandle() {
+    if (!soundPoolRunning) {
+        soundPoolInit.lock();
+        if (!soundPoolRunning) {
+            new thread(soundCardPool);
+            while (soundCardHandles.size() < 2) {
+                usleep(1000);
+            }
+            soundPoolRunning = true;
+        }
+        soundPoolInit.unlock();
+    }
+
+    soundPool.lock();
+    if (soundCardHandles.size() < 1) {
+        fprintf(stderr, "unable to obtain sound card handle");
+        soundPool.unlock();
+        return NULL;
+    }
+    snd_pcm_t* handle = soundCardHandles.back();
+    soundCardHandles.pop_back();
+    soundPool.unlock();
+    return handle;
+}

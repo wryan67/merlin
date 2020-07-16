@@ -130,6 +130,7 @@
     <Media Include="wav\yourmove.wav" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="songs\jingle bells.txt" />
     <Text Include="songs\london bridge.txt" />
     <Text Include="songs\mary had a little lamb.txt" />
     <Text Include="songs\twinkle twinkle little star.txt" />

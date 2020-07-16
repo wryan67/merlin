@@ -1,55 +1,4 @@
 #include "Sound.h"
-#include <vector>
-#include <mutex>
-#include <thread>
-
-using namespace std;
-
-vector<snd_pcm_t*> soundCardHandles;
-mutex soundPool;
-mutex soundPoolInit;
-bool  soundPoolRunning = false;
-
-#define minSoundPoolSize 10
-
-void soundCardPool() {
-    
-    while (true) {
-        while (soundCardHandles.size() < minSoundPoolSize) {
-            soundPool.lock();
-            snd_pcm_t* handle = openSoundCard(getenv("AUDIODEV"));
-            soundCardHandles.push_back(handle);
-            soundPool.unlock();
-        }
-        usleep(2000);
-    }
-}
-
-snd_pcm_t* getSoundCardHandle() {
-    printf("get sound card handle ...\n"); fflush(stdout);
-    if (!soundPoolRunning) {
-        soundPoolInit.lock();
-        if (!soundPoolRunning) {
-            new thread(soundCardPool);
-            while (soundCardHandles.size() < 2) {
-                usleep(1000);
-            }
-            soundPoolRunning = true;
-        }
-        soundPoolInit.unlock();
-    }
-
-    soundPool.lock();
-    if (soundCardHandles.size() < 1) {
-        fprintf(stderr, "unable to obtain sound card handle");
-        soundPool.unlock();
-        return NULL;
-    }
-    snd_pcm_t* handle = soundCardHandles.back();
-    soundCardHandles.pop_back();
-    soundPool.unlock();
-    return handle;
-}
 
 
 void playWavFile(char* filename, float volume) {
@@ -125,7 +74,6 @@ void playWavFile(snd_pcm_t* soundCardHandle, char* filename, float volume) {
             free(wavHeaderChunk);
             break;
         } else {
-            fprintf(stderr,"ftell=%08lx  chucnkSize=%ld\n", ftell(wav), (long)wavChunkHeader.chunkSize);
             fseek(wav, wavChunkHeader.chunkSize, SEEK_CUR);
         }
     }
