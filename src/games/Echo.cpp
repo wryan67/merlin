@@ -45,19 +45,29 @@ namespace Games {
         }
         isActive = false;
         isPlaying = true;
+
+        snd_pcm_t* handle = getSoundCardHandle();
+        if (handle == NULL) {
+            fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
+            return;
+        }
+
         for (int i : song) {
             if (interruptFlag || isActive) {
                 isPlaying = false;
                 isActive = true;
+                closeSoundCard(handle);
                 return;
             }
             setPixelColor(i, keyFlashColor);
             render();
-            playTone(noteHz[i], .333, &wavForamt);
+            _playTone(handle, noteHz[i], .333, &wavForamt);
+            drainSound(handle);
             usleep(1000);
             setPixelColor(i, -1);
             render();
         }
+        closeSoundCard(handle);
 
         render();
         isActive = true;

@@ -71,7 +71,7 @@ namespace Games {
     }
 
     void Blackjack13::hitMe() {
-        if (debounce(HIT_ME, 100)) return;
+        if (debounce(HIT_ME, 200)) return;
         printf("hit me\n");
         if (!isActive) {
             return;
