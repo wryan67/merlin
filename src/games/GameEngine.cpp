@@ -221,9 +221,6 @@ playWav("achievement-00.wav", true);
                         keyTone(i);
                     }
                 } else {
-                    if (i != lastPress) {
-                        return;
-                    }
                     if (isActive) {
                         keypadButtonReleased(i);
                     }
