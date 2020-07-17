@@ -10,7 +10,7 @@ namespace Games {
         bool isPlaying = false;
 
     protected: 
-        void keypadButtonReleased(int button);
+        void keypadButtonReleased(int button, long long elapsed);
         void computerTurn();
         void GenerateNextSequence();
         void restartGame();

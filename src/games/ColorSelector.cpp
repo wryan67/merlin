@@ -56,7 +56,7 @@ namespace Games {
         return false;
     }
 
-    void ColorSelector::keypadButtonReleased(int button) {
+    void ColorSelector::keypadButtonReleased(int button, long long elapsed) {
         if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
         setPixelColor(button, -1);
         render();

@@ -10,7 +10,7 @@ namespace Games {
         };
 
     protected: 
-        void keypadButtonReleased(int button);
+        void keypadButtonReleased(int button, long long elapsed);
         void clearBoard();
         void restartGame();
         void computerTurn();
@@ -19,6 +19,8 @@ namespace Games {
         void checkGameStatus(bool& gameOver, int& winner);
 
         bool checkGameStatus();
+
+        void render();
 
     public:
         TicTacToe();

@@ -65,7 +65,7 @@ namespace Games {
     }
 
 
-    void Blackjack13::keypadButtonReleased(int button) {
+    void Blackjack13::keypadButtonReleased(int button, long long elapsed) {
         if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
         render();
     }

@@ -12,6 +12,7 @@ namespace Games {
 
     mutex screenLock;
 
+    volatile long long lastRelease[MERLIN_BUTTONS];
     volatile long long lastActivation[MERLIN_BUTTONS];
     volatile int lastPress= -1;
 
@@ -27,6 +28,7 @@ namespace Games {
         }
 
         for (int i = 0; i < MERLIN_BUTTONS; ++i) {
+            lastRelease[i] = 0;
             lastActivation[i] = 0;
         }
 
@@ -181,7 +183,7 @@ playWav("achievement-00.wav", true);
         fprintf(stderr, "restartGame not defined: %s\n", gameName);
     }
 
-    void GameEngine::keypadButtonReleased(int button) {
+    void GameEngine::keypadButtonReleased(int button, long long elapsed) {
         fprintf(stderr, "keypad button released not defined: %s\n", gameName);
     }
 
@@ -222,7 +224,8 @@ playWav("achievement-00.wav", true);
                     }
                 } else {
                     if (isActive) {
-                        keypadButtonReleased(i);
+                        keypadButtonReleased(i, (currentTime - lastRelease[i]));
+                        lastRelease[i] = currentTime;
                     }
                 }
             }

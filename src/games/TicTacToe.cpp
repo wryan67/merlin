@@ -11,12 +11,9 @@ namespace Games {
     }
 
     void TicTacToe::clearBoard() {
-        pixelColor[pixelMap[0]] = OFF;
         for (int i = 1; i <= 9; ++i) {
             pixelState[i] = EMPTY;
-            pixelColor[pixelMap[i]] = OFF;
         }
-        pixelColor[pixelMap[10]] = OFF;
         render();
     }
 
@@ -92,7 +89,6 @@ namespace Games {
 
     void TicTacToe::computerMovesHere(int move) {
         pixelState[move] = COMPUTER;
-        setPixelColor(move, computerColor);
         render();
         playWav("computermove.wav", true);
         isActive = checkGameStatus();
@@ -172,26 +168,43 @@ namespace Games {
         return !gameOver;
     }
 
+    void TicTacToe::render() {
+        for (int i = 1; i <= 9; ++i) {
+            switch (pixelState[i]) {
+            case EMPTY:      setPixelColor(i, -1); 
+                break;
+            case HUMAN:      setPixelColor(i, playerColor);
+                break;
+            case COMPUTER:   setPixelColor(i, computerColor);
+                break;
+            }
+        }
+        pixelColor[pixelMap[0]] = OFF;
+        pixelColor[pixelMap[10]] = OFF;
 
-    void TicTacToe::keypadButtonReleased(int button) {  // human move
+        GameEngine::render();
+    }
+
+    void TicTacToe::keypadButtonReleased(int button, long long elapsed) {  // human move
+        render();
+        if (elapsed < 200) {
+            return;
+        }
+
         isActive = false;
-        if (button < 1 || button>9) {
+        if (button<1 || button>9) {
             playWav("buzzer.wav",true);
-            pixelColor[pixelMap[button]] = 0;
-            render();
             isActive = true;
             return;
         }
-        if (pixelState[button] != 0) {
+
+        if (pixelState[button] != EMPTY) {
             playWav("buzzer.wav", true);
-            setPixelColor(button, (pixelState[button] == 1) ? playerColor : computerColor);
-            render();
             isActive = true;
             return;
         }
 
         pixelState[button] = HUMAN;
-        setPixelColor(button, playerColor);
         render();
         keyTone(button);
 

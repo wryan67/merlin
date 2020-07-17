@@ -11,7 +11,7 @@ namespace Games {
 
     protected: 
         bool isTaken(int button);
-        void keypadButtonReleased(int button);
+        void keypadButtonReleased(int button, long long elapsed);
         void restartGame();
 
     public:

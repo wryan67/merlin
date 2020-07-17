@@ -11,7 +11,7 @@ namespace Games {
 
 
     protected: 
-        void keypadButtonReleased(int button);
+        void keypadButtonReleased(int button, long long elapsed);
         void restartGame();
         int  dealFromDeck(vector<int>& hand, bool audiable);
         void hitMe();

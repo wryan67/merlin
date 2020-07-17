@@ -7,12 +7,9 @@ namespace Games {
     }
 
     void MagicSquare::randomizeBoard() {
-        pixelColor[pixelMap[0]] = OFF;
         for (int i = 1; i <= 9; ++i) {
             pixelState[i] = random(0, 1);
-            setPixelColor(i, (pixelState[i] == 0) ? computerColor : playerColor);
         }
-        pixelColor[pixelMap[10]] = OFF;
         render();
     }
 
@@ -23,22 +20,34 @@ namespace Games {
         isActive = true;
     }
 
-    void MagicSquare::keypadButtonReleased(int button) {
-        if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
+    void MagicSquare::keypadButtonReleased(int button, long long elapsed) {
+        fprintf(stderr, "Magic Square -- key pressed:  %d   elapsed=%lld\n", button, elapsed);
+
+        render();
+        if (elapsed < 200) {
+            return;
+        }
         swapKey(button);
     }
 
     void MagicSquare::swapState(int i) {
         if (pixelState[i] == 1) {
             pixelState[i] = 0;
-            setPixelColor(i, computerColor);
         }
         else {
             pixelState[i] = 1;
-            setPixelColor(i, playerColor);
         }
     }
 
+    void MagicSquare::render() {
+        for (int i = 1; i <= 9; ++i) {
+            setPixelColor(i, (pixelState[i])?playerColor:computerColor);
+        }
+        pixelColor[pixelMap[0]] = OFF;
+        pixelColor[pixelMap[10]] = OFF;
+
+        GameEngine::render();
+    }
 
     void MagicSquare::swapKey(int i) {
         if (debug) printf("Magic Square: keypressed=%d\n",i);
@@ -55,7 +64,7 @@ namespace Games {
         case 8:  swapState(7); swapState(8); swapState(9); break;
 
         case 5:  swapState(5); swapState(2); swapState(4); swapState(6); swapState(8); break;
-        default: pixelColor[pixelMap[i]] = 0;
+        //default: pixelColor[pixelMap[i]] = 0;
 
         }
         render();

@@ -59,8 +59,13 @@ namespace Games {
     }
 
 
-    void SimonSays::keypadButtonReleased(int button) {
+    void SimonSays::keypadButtonReleased(int button, long long elapsed) {
         clearBoard();
+
+        if (elapsed < 200) {
+            return;
+        }
+
         humanSequence.push_back(button);
 
         for (int i = 0; i < humanSequence.size(); ++i) {

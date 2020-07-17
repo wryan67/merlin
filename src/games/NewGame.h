@@ -16,7 +16,7 @@ namespace Games {
         void resetGameBoard();
 
         void restartGame();
-        void keypadButtonReleased(int button);
+        void keypadButtonReleased(int button, long long elapsed);
     };
 
 }

@@ -16,10 +16,13 @@ namespace Games {
         isActive = true;
     }
 
-    void Echo::keypadButtonReleased(int button) {
+    void Echo::keypadButtonReleased(int button, long long elapsed) {
         if (debug) fprintf(stderr, "Echo -- key pressed:  %d\n", button);
         setPixelColor(button, -1);
         render();
+        if (elapsed < 200) {
+            return;
+        }
         song.push_back(button);
     }
 

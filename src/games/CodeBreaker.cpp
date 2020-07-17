@@ -74,10 +74,15 @@ namespace Games {
 
 
 
-    void CodeBreaker::keypadButtonReleased(int button) {
+    void CodeBreaker::keypadButtonReleased(int button, long long elapsed) {
         if (debug) fprintf(stderr, "Code Breaker -- key pressed:  %d\n", button);
 
         render();
+
+        if (elapsed < 200) {
+            return;
+        }
+
         if (codeLength() < 1) {
             if (button < 1 || button>10) {
                 playWav("buzzer.wav", true);

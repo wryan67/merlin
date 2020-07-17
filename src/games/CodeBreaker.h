@@ -9,7 +9,7 @@ namespace Games {
         unordered_map<int, int> displayGuesses;
 
     protected: 
-        void keypadButtonReleased(int button);
+        void keypadButtonReleased(int button, long long elapsed);
         void hitMe();
         void restartGame();
         void render();

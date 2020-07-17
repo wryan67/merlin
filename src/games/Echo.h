@@ -8,7 +8,7 @@ namespace Games {
         bool isPlaying;
 
     protected: 
-        void keypadButtonReleased(int button);
+        void keypadButtonReleased(int button, long long elapsed);
         void computerTurn();
         void restartGame();
 

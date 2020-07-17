@@ -72,7 +72,7 @@ namespace Games {
         int getPixelColor(int button);
 
         virtual void keyTone(int button);
-        virtual void keypadButtonReleased(int button);
+        virtual void keypadButtonReleased(int button, long long elapsed);
 
     public:
         static int  brightness;

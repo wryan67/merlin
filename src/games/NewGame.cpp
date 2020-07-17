@@ -30,7 +30,7 @@ namespace Games {
         isActive = true;
     }
 
-    void NewGame::keypadButtonReleased(int button) {
+    void NewGame::keypadButtonReleased(int button, long long elapsed) {
         resetGameBoard();
 
         if (enabledGames[button]) {
