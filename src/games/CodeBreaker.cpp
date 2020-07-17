@@ -6,6 +6,10 @@ namespace Games {
     CodeBreaker::CodeBreaker() {
         gameName = "Code Breaker";
         gameWav = "codebreaker.wav";
+
+        for (int i = 0; i < MERLIN_LIGHTS; ++i) {
+            keyTonesAudible[i] = false;
+        }
     }
     void CodeBreaker::announceGame() {
         clearBoard();
@@ -82,9 +86,10 @@ namespace Games {
         if (elapsed < 200) {
             return;
         }
+        keyTone(button);
 
         if (codeLength() < 1) {
-            if (button < 1 || button>10) {
+            if (button < 1 || button>9) {
                 playWav("buzzer.wav", true);
                 return;
             }

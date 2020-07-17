@@ -21,7 +21,7 @@ namespace Games {
     }
 
     void MagicSquare::keypadButtonReleased(int button, long long elapsed) {
-        fprintf(stderr, "Magic Square -- key pressed:  %d   elapsed=%lld\n", button, elapsed);
+        //fprintf(stderr, "Magic Square -- key pressed:  %d   elapsed=%lld\n", button, elapsed);
 
         render();
         if (elapsed < 200) {

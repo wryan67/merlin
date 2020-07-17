@@ -4,6 +4,10 @@ namespace Games {
     Echo::Echo() {
         gameName = "Echo";
         gameWav = "echo.wav";
+
+        for (int i = 0; i < MERLIN_LIGHTS; ++i) {
+            keyTonesAudible[i] = false;
+        }
     }
 
 
@@ -24,6 +28,7 @@ namespace Games {
             return;
         }
         song.push_back(button);
+        keyTone(button);
     }
 
     void Echo::computerTurn() {
