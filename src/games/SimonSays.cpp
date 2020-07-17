@@ -81,6 +81,8 @@ namespace Games {
     }
 
     void SimonSays::computerTurn() {
+        if (debounce(HIT_ME, 100)) return;
+
         if (isPlaying) {
             interruptFlag = true;
             usleep(333 * 1000);

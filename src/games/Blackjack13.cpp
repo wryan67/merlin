@@ -71,6 +71,7 @@ namespace Games {
     }
 
     void Blackjack13::hitMe() {
+        if (debounce(HIT_ME, 100)) return;
         printf("hit me\n");
         if (!isActive) {
             return;
@@ -87,6 +88,7 @@ namespace Games {
     }
 
     void Blackjack13::computerTurn() {
+        if (debounce(COMP_TURN, 100)) return;
         printf("computer turn\n");
         if (!isActive) {
             return;

@@ -1,6 +1,4 @@
 #include "TicTacToe.h"
-#include <thread>
-
 
 namespace Games {
     TicTacToe::TicTacToe() {
@@ -30,6 +28,7 @@ namespace Games {
     }
 
     void TicTacToe::computerTurn() {
+        if (debounce(HIT_ME, 100)) return;
         bool gameOver;
         int  winner;
         vector<int> validMoves;

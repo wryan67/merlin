@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include <thread>
+#include <mutex>
 
 using namespace std;
 
@@ -9,6 +10,10 @@ namespace Games {
     int      GameEngine::playerColor=248;
     int      GameEngine::computerColor=168;
 
+    mutex screenLock;
+
+    volatile long long lastActivation[MERLIN_BUTTONS];
+    volatile int lastPress= -1;
 
 
     GameEngine::~GameEngine() {}
@@ -19,6 +24,10 @@ namespace Games {
             char name[32];
             sprintf(name, "KEYPAD_%d", i);
             keypadButton[i] = getEnvMCP23x17_GPIO(name);
+        }
+
+        for (int i = 0; i < MERLIN_BUTTONS; ++i) {
+            lastActivation[i] = 0;
         }
 
         pixelMap[0] = 3;
@@ -62,17 +71,13 @@ namespace Games {
     }
 
     void GameEngine::render() {
-        if (debug) fprintf(stderr, "render: ");
-
+        screenLock.lock();
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
-            if (debug) fprintf(stderr, "[%d:%d]", i, pixelColor[pixelMap[i]]);
             neopixel_setPixel(i, pixelColor[i]);
-        }
-        if (debug) {
-            fprintf(stderr,"\n"); fflush(stderr);
         }
     
         neopixel_render();
+        screenLock.unlock();
     }
 
     void GameEngine::initWavFormat() {
@@ -90,23 +95,25 @@ namespace Games {
 //        char cmd[256];
 //        sprintf(cmd, "play %s/projects/merlin/wav/achievement-00.wav 2> /dev/null &", getenv("HOME"));
 //        system(cmd);
-        playWav("achievement-00.wav", true);
+playWav("achievement-00.wav", true);
     }
 
     void GameEngine::playFailed() {
         printf("player lost!\n");
-//        char cmd[256];
-//        sprintf(cmd, "play %s/projects/merlin/wav/youlose.wav 2> /dev/null &", getenv("HOME"));
-//        system(cmd);
+        //        char cmd[256];
+        //        sprintf(cmd, "play %s/projects/merlin/wav/youlose.wav 2> /dev/null &", getenv("HOME"));
+        //        system(cmd);
         playWav("youlose.wav", true);
     }
 
     void GameEngine::setPixelColor(int button, int wheelColor) {
         if (wheelColor < 0) {
             pixelColor[pixelMap[button]] = OFF;
-        } else if (wheelColor>255) {
+        }
+        else if (wheelColor > 255) {
             pixelColor[pixelMap[button]] = 0xFFFFFFFF;  // White
-        } else {
+        }
+        else {
             pixelColor[pixelMap[button]] = neopixel_wheel(wheelColor);
         }
     }
@@ -115,32 +122,29 @@ namespace Games {
         return pixelColor[pixelMap[button]];
     }
 
-    void GameEngine::playWav(const char *filename, bool background) {
+    void GameEngine::playWav(const char* filename, bool background) {
         char* path = (char*)malloc(512 + strlen(filename));
         float volume = 1.0;
         sprintf(path, "%s/projects/merlin/wav/%s", getenv("HOME"), filename);
 
-//        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null %s", getenv("HOME"), filename, (background)?"&":"");
-//        system(cmd);
+        //        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null %s", getenv("HOME"), filename, (background)?"&":"");
+        //        system(cmd);
 
         if (background) {
-            volume = 2.0;
-            char _path = strlen(path);
-            new thread(playWavFile, path, volume);
+            thread(playWavFile, path, volume).detach();
         } else {
-            volume = 1.0;
             playWavFile(path, volume);
         }
 
     }
 
 
-    void* buttonTone(float freq, wavFormat *wavFormat) {
+    void* buttonTone(float freq, wavFormat* wavFormat) {
         playTone(freq, .45, wavFormat);
     }
 
     void GameEngine::keyTone(int button) {
-        new thread(buttonTone, noteHz[button], &wavForamt);
+        thread(buttonTone, noteHz[button], &wavForamt).detach();
     }
 
     void GameEngine::interrupt() {
@@ -148,12 +152,12 @@ namespace Games {
         interruptFlag = true;
         delay(500);
     }
-    
+
 
     void GameEngine::initPixels() {
         neopixel_setBrightness(brightness);
 
-        for (int c=0;c<256;++c) {
+        for (int c = 0; c < 256; ++c) {
             for (int i = 0; i <= 10; ++i) {
                 pixelColor[pixelMap[i]] = neopixel_wheel(c);
             }
@@ -165,7 +169,7 @@ namespace Games {
         }
     }
 
-    void GameEngine::eSpeak(char *message) {
+    void GameEngine::eSpeak(char* message) {
         char cmd[1024];
         sprintf(cmd, "espeak --stdout %c%s%c 2>/dev/null| play -q - >/dev/null 2>&1", 39, message, 39);
         system(cmd);
@@ -181,19 +185,33 @@ namespace Games {
         fprintf(stderr, "keypad button released not defined: %s\n", gameName);
     }
 
+
+    bool GameEngine::debounce(int button, int ms) {
+        long long currentTime = currentTimeMillis();
+        if ((currentTime - lastActivation[button]) < ms) {
+            return true;
+        }
+        lastActivation[button] = currentTime;
+        return false;
+    }
+
     void GameEngine::hitMe() {
     }
 
     void GameEngine::computerTurn() {
     }
 
-
     void GameEngine::keypadButtonActivation(MCP23x17_GPIO gpio, int value) {
-        if (debug) printf("game engine button activation isActive=%d\n",isActive);
+        long long currentTime = currentTimeMillis();
+        
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
             if (gpio == keypadButton[i]) {
-                if (debug) printf("keypad value=%d button activation port=%c pin=%d value=%d\n", i, mcp23x17_getPort(gpio) + 'A', mcp23x17_getPin(gpio), value);
                 if (value == 0) {
+                    if ((currentTime - lastActivation[i]) < 50) {
+                        return;
+                    }
+                    lastPress = i;
+                    lastActivation[i] = currentTime;
                     if (isActive) {
                         setPixelColor(i, keyFlashColor);
                         render();
@@ -203,6 +221,9 @@ namespace Games {
                         keyTone(i);
                     }
                 } else {
+                    if (i != lastPress) {
+                        return;
+                    }
                     if (isActive) {
                         keypadButtonReleased(i);
                     }

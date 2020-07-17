@@ -73,13 +73,14 @@ void playTone(float freq, float duration, wavFormat* wavForamt) {
     snd_pcm_t* handle = getSoundCardHandle();
     if (handle == NULL) {
         fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
+        return;
     }
-    playTone(handle, freq, duration, wavForamt);
+    _playTone(handle, freq, duration, wavForamt);
     closeSoundCard(handle);
 }
 
 
-void playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavFormat* wavForamt) {
+void _playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavFormat* wavForamt) {
     long dataSize = wavForamt->blockAlign * wavForamt->sampleRate * duration;
 
     void* data = malloc(dataSize);

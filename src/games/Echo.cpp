@@ -24,6 +24,8 @@ namespace Games {
     }
 
     void Echo::computerTurn() {
+        if (debounce(HIT_ME, 100)) return;
+
         if (isPlaying) {
             interruptFlag = true;
             usleep(333 * 1000);
@@ -46,6 +48,7 @@ namespace Games {
             playTone(noteHz[i], .333, &wavForamt);
             usleep(1000);
             setPixelColor(i, -1);
+            render();
         }
 
         render();

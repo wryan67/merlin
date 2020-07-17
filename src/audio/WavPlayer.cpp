@@ -6,13 +6,14 @@ void playWavFile(char* filename, float volume) {
     snd_pcm_t* handle = getSoundCardHandle();
     if (handle == NULL) {
         fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
+        return;
     }
-    playWavFile(handle, filename, volume);
+    _playWavFile(handle, filename, volume);
     closeSoundCard(handle);
 }
 
 
-void playWavFile(snd_pcm_t* soundCardHandle, char* filename, float volume) {
+void _playWavFile(snd_pcm_t* soundCardHandle, char* filename, float volume) {
     printf("Playing %s ...\n"); fflush(stdout);
 
     int err;
@@ -188,8 +189,6 @@ void playWavFile(snd_pcm_t* soundCardHandle, char* filename, float volume) {
     }
 
     if (debug) fprintf(stderr, "flushing soundCardHandle\n"); fflush(stderr);
-
-    drainSound(soundCardHandle);
 
     free(data);
     fclose(wav);

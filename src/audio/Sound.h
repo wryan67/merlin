@@ -46,8 +46,8 @@ snd_pcm_t* openSoundCard(const char* soundCardName);
 void       closeSoundCard(snd_pcm_t* soundCardHandle);
 
 // Only needed if you have more than 1 sound card
-void playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavFormat* wavForamt);
-void playWavFile(snd_pcm_t* soundCardHandle, char* filename, float volume);
+void _playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavFormat* wavForamt);
+void _playWavFile(snd_pcm_t* soundCardHandle, char* filename, float volume);
 
 
 // use at your own risk

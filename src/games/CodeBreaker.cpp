@@ -121,6 +121,7 @@ namespace Games {
     }
 
     void CodeBreaker::hitMe() {
+        if (debounce(HIT_ME, 100)) return;
         playerGuesses.clear();
         playWav("computermove.wav",true);
     }

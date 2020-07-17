@@ -10,14 +10,20 @@
 
 #ifndef MERLIN_LIGHTS
 
-#define MERLIN_LIGHTS 11
+#define MERLIN_LIGHTS  11
+#define MERLIN_BUTTONS 30
 #define maxNotes 11
 
-#define OFF       0
+#define NEW_GAME       20
+#define SAME_GAME      21
+#define HIT_ME         22
+#define COMP_TURN      23
+
+#define OFF         0
 //#define RED      88
 //#define GREEN   248  
 //#define BLUE    168
-#define CYAN    216 
+#define CYAN      216 
 #endif
 
 #ifndef NULL
@@ -28,6 +34,7 @@ extern bool debug;
 
 void startGame(int game);
 
-pthread_t threadCreate(void* (*method)(void*), const char* description, void* args);
+unsigned long long currentTimeMillis();
+
 int random(int low, int high);
 

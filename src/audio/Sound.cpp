@@ -1,4 +1,18 @@
 #include "Sound.h"
+#include <vector>
+#include <mutex>
+#include <thread>
+
+using namespace std;
+
+
+vector<snd_pcm_t*> soundCardHandles;
+mutex soundPool;
+mutex soundPoolInit;
+bool  soundPoolRunning = false;
+
+#define minSoundPoolSize 10
+
 
 
 snd_pcm_t* openSoundCard(const char* soundCardName) {
@@ -34,18 +48,6 @@ void closeSoundCard(snd_pcm_t* soundCardHandle) {
 }
 
 
-#include <vector>
-#include <mutex>
-#include <thread>
-
-using namespace std;
-
-vector<snd_pcm_t*> soundCardHandles;
-mutex soundPool;
-mutex soundPoolInit;
-bool  soundPoolRunning = false;
-
-#define minSoundPoolSize 10
 
 void soundCardPool() {
 
@@ -64,7 +66,8 @@ snd_pcm_t* getSoundCardHandle() {
     if (!soundPoolRunning) {
         soundPoolInit.lock();
         if (!soundPoolRunning) {
-            new thread(soundCardPool);
+            thread wav = thread(soundCardPool);
+            wav.detach();
             while (soundCardHandles.size() < 2) {
                 usleep(1000);
             }

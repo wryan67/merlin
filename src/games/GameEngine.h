@@ -88,6 +88,7 @@ namespace Games {
         virtual void restartGame();
         virtual void interrupt();
         virtual void computerTurn();
+        bool debounce(int button, int ms);
         virtual void hitMe();
         virtual void keypadButtonActivation(MCP23x17_GPIO gpio, int value);
 
