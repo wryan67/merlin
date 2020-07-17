@@ -195,9 +195,11 @@ do
     package)   PACKAGE=1
                ;;
     install)   INSTALL=1
+               PACKAGE=1
                EXECUTABLE=1
                ;;
-    exe)       EXECUTABLE=1
+    exe)       PACKAGE=1
+               EXECUTABLE=1
                ;;
     remove)    REMOVE=1
                ;;

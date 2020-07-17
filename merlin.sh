@@ -30,10 +30,14 @@ if [ -t 0 ];then
 fi
 ps -ef | awk '{if (/merlin.out/ && !/awk/) system(sprintf("sudo kill %d",$2))}'
 
-if [ ! -s /home/wryan/projects/merlin/bin/ARM/Debug/merlin.out ];then
+
+[ -x $HOME/projects/merlin/bin/ARM/Debug/merlin.out ] && EXE=$HOME/projects/merlin/bin/ARM/Debug/merlin.out
+[ -x $HOME/projects/merlin/bin/merlin ] && EXE=$HOME/projects/merlin/bin/merlin
+
+if [ ! -s "$EXE" ];then
   echo game is not compiled
   exit 2
 fi
 
 echo starting merlin...
-sudo -E $HOME/projects/merlin/bin/ARM/Debug/merlin.out
+sudo -E $EXE
