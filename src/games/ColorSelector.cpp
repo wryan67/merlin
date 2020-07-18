@@ -16,6 +16,14 @@ namespace Games {
         playWav("samegame.wav", false);
     }
 
+    void ColorSelector::render() {
+        for (pair<int, int> e : palletMap) {
+            setPixelColor(e.first, e.second);
+        }
+
+        GameEngine::render();
+    }
+
     void ColorSelector::restartGame() {
         printf("%s -- brightness=%d\n", gameName, brightness);
 
@@ -36,10 +44,6 @@ namespace Games {
 
         palletMap[i++] = -1;  //10 off
 
-        for (pair<int, int> e : palletMap) {
-            setPixelColor(e.first, e.second);
-        }
-
         render();
 
         eSpeak("select player color");
@@ -47,10 +51,8 @@ namespace Games {
     }
 
     bool ColorSelector::isTaken(int button) {
-        if (mapContainsValue(customColors, palletMap[button])) {
-            isActive = false;
+        if (palletMap[button]<0) {
             playWav("buzzer.wav", true);
-            isActive = true;
             return true;
         }
         return false;
@@ -58,8 +60,12 @@ namespace Games {
 
     void ColorSelector::keypadButtonReleased(int button, long long elapsed) {
         if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
-        setPixelColor(button, -1);
+
         render();
+        if (elapsed < 250) {
+            return;
+        }
+
         if (button < 1 || button > 9) {
             isActive = false;
             playWav("buzzer.wav", true);
@@ -70,6 +76,8 @@ namespace Games {
         if (customColors.size() < 1) {
             customColors[PLAYER] = palletMap[button];
             playerColor = customColors[PLAYER];
+            palletMap[button] = -1;
+            render();
             eSpeak("select computer color");
             return;
         }
@@ -80,6 +88,8 @@ namespace Games {
             }
             customColors[COMPUTER] = palletMap[button];
             computerColor = customColors[COMPUTER];
+            palletMap[button] = -1;
+            render();
             eSpeak("select flash color");
             return;
         }

@@ -23,6 +23,7 @@ namespace Games {
         bool interruptFlag;
         wavFormat wavForamt;
         int sampleRate = 48000;
+        static bool screenReader;
 
 
 

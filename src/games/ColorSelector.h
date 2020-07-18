@@ -13,6 +13,7 @@ namespace Games {
         bool isTaken(int button);
         void keypadButtonReleased(int button, long long elapsed);
         void restartGame();
+        void render();
 
     public:
         ColorSelector();

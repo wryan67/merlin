@@ -22,7 +22,7 @@ namespace Games {
 
     void Echo::keypadButtonReleased(int button, long long elapsed) {
         if (debug) fprintf(stderr, "Echo -- key pressed:  %d\n", button);
-        setPixelColor(button, -1);
+        clearBoard();
         render();
         if (elapsed < 200) {
             return;
@@ -52,6 +52,7 @@ namespace Games {
             return;
         }
 
+        clearBoard();
         for (int i : song) {
             if (interruptFlag || isActive) {
                 isPlaying = false;

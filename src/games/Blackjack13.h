@@ -14,6 +14,7 @@ namespace Games {
         void keypadButtonReleased(int button, long long elapsed);
         void restartGame();
         int  dealFromDeck(vector<int>& hand, bool audiable);
+        char* getArticle(int card);
         void hitMe();
         void computerTurn();
         int  computeScore(vector<int>& cards);
@@ -21,6 +22,7 @@ namespace Games {
     public:
         Blackjack13();
         void render();
+        int announceCards(char* who, vector<int>& cards);
     };
 }
 

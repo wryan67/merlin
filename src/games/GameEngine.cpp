@@ -5,10 +5,11 @@
 using namespace std;
 
 namespace Games {
-    int      GameEngine::brightness=16;
-    int      GameEngine::keyFlashColor=88;
-    int      GameEngine::playerColor=248;
-    int      GameEngine::computerColor=168;
+    int  GameEngine::brightness=16;
+    int  GameEngine::keyFlashColor=88;
+    int  GameEngine::playerColor=248;
+    int  GameEngine::computerColor=168;
+    bool GameEngine::screenReader=false;
 
     mutex screenLock;
 
@@ -64,12 +65,12 @@ namespace Games {
 
     void GameEngine::announceGame() {
         clearBoard();
-        playWav(gameWav, true);
+        playWav(gameWav, !screenReader);
     }
 
     void GameEngine::announceSameGame() {
         clearBoard();
-        playWav("samegame.wav", true);
+        playWav("samegame.wav", !screenReader);
     }
 
     void GameEngine::render() {

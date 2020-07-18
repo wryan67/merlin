@@ -127,6 +127,7 @@ namespace Games {
         } else {
             playWav("buzzer.wav", true);
             playerGuesses.clear();
+            displayGuesses.clear();
         }
     }
 

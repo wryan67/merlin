@@ -24,6 +24,18 @@ namespace Games {
         GameEngine::render();
     }
 
+    int Blackjack13::announceCards(char *who, vector<int> &cards) {
+        char msg[256];
+        char tmpstr[32];
+
+        sprintf(msg, "%s has %d card%s, ", who, (int)cards.size(), (cards.size()==1)?"":"s");
+        for (int card : cards) {
+            sprintf(tmpstr, "%d ", card);
+            strcat(msg, tmpstr);
+        }
+        eSpeak(msg);
+    }
+
 
     void Blackjack13::restartGame() {
         printf("%s\n", gameName);
@@ -47,6 +59,10 @@ namespace Games {
         printVector("player", playerCards);
         printVector("dealer", dealerCards);
 
+        if (screenReader) {
+            announceCards("player", playerCards);
+            announceCards("dealer", dealerCards);
+        }
         render();
         isActive = true;
     }
@@ -65,6 +81,31 @@ namespace Games {
     }
 
 
+    enum Articles {
+        A, AN, THE
+    };
+    char* articles[3] = {
+        "a",
+        "an",
+        "the"
+    };
+
+    char* Blackjack13::getArticle(int card) {
+        switch (card) {
+        case 1: return articles[A];
+        case 2: return articles[A];
+        case 3: return articles[A];
+        case 4: return articles[A];
+        case 5: return articles[A];
+        case 6: return articles[A];
+        case 7: return articles[A];
+        case 8: return articles[AN];
+        case 9: return articles[A];
+        case 10: return articles[A];
+        }
+
+    }
+
     void Blackjack13::keypadButtonReleased(int button, long long elapsed) {
         if (debug) fprintf(stderr, "Magic Square -- key pressed:  %d\n", button);
         render();
@@ -78,8 +119,13 @@ namespace Games {
         }
 
         int card=dealFromDeck(playerCards, true);
-        
         int score = computeScore(playerCards);
+
+        if (screenReader) {
+            char msg[256];
+            sprintf(msg, "player receives %s %d", getArticle(card), card);
+            eSpeak(msg);
+        }
 
         if (score > 13) {
             isActive = false;
@@ -98,7 +144,15 @@ namespace Games {
         int dealerScore = computeScore(dealerCards);
 
         while (dealerScore < 13 && dealerScore < playerScore) {
-            dealerScore += dealFromDeck(dealerCards, true);
+            int card = dealFromDeck(dealerCards, true);
+            dealerScore += card;
+            
+            if (screenReader) {
+                char msg[256];
+                sprintf(msg, "dealer receives %s %d", getArticle(card), card);
+                eSpeak(msg);
+            }
+
         }
 
         if (dealerScore > 13) {

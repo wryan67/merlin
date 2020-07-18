@@ -13,7 +13,7 @@ namespace Games {
     public:
         NewGame();
 
-        void resetGameBoard();
+        void render();
 
         void restartGame();
         void keypadButtonReleased(int button, long long elapsed);

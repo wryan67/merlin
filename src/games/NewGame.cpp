@@ -9,7 +9,7 @@ namespace Games {
     }
 
 
-    void NewGame::resetGameBoard() {
+    void NewGame::render() {
         for (int i = 0; i < MERLIN_LIGHTS; ++i) {
             if (enabledGames[i]) {
                 pixelState[i] = 0;
@@ -21,17 +21,29 @@ namespace Games {
                 pixelColor[pixelMap[i]] = OFF;
             }
         }
-        render();
+        GameEngine::render();
     }
     void NewGame::restartGame() {
         fprintf(stderr, "New Game Selector\n");
 
-        resetGameBoard();
+        render();
         isActive = true;
     }
 
     void NewGame::keypadButtonReleased(int button, long long elapsed) {
-        resetGameBoard();
+        render();
+        if (elapsed < 250) {
+            return;
+        }
+        
+        if (button == 0) {
+            screenReader = !screenReader;
+            if (screenReader) {
+                eSpeak("screen reader on");
+            } else {
+                eSpeak("screen reader off");
+            }
+        }
 
         if (enabledGames[button]) {
             startGame(button);
