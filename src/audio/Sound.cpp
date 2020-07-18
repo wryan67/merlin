@@ -32,6 +32,7 @@ snd_pcm_t* openSoundCard(const char* soundCardName) {
     return soundCardHandle;
 }
 
+
 void drainSound(snd_pcm_t* soundCardHandle) {
     int err = snd_pcm_drain(soundCardHandle);
     if (err < 0) {

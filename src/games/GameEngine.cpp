@@ -65,6 +65,7 @@ namespace Games {
 
     void GameEngine::announceGame() {
         clearBoard();
+        fprintf(stderr, "announce game %s\n", gameName); fflush(stderr);
         playWav(gameWav, !screenReader);
     }
 
@@ -84,28 +85,22 @@ namespace Games {
     }
 
     void GameEngine::initWavFormat() {
-        wavForamt.audioFormat = 1;
-        wavForamt.channels = 1;
-        wavForamt.sampleRate = sampleRate;
-        wavForamt.bitsPerSample = 16;
-        wavForamt.blockAlign = wavForamt.bitsPerSample / 8;
-        wavForamt.byteRate = wavForamt.sampleRate * wavForamt.channels * wavForamt.blockAlign;
+        wavConfig.audioFormat = 1;
+        wavConfig.channels = 1;
+        wavConfig.sampleRate = sampleRate;
+        wavConfig.bitsPerSample = 16;
+        wavConfig.blockAlign = wavConfig.bitsPerSample / 8;
+        wavConfig.byteRate = wavConfig.sampleRate * wavConfig.channels * wavConfig.blockAlign;
     }
 
 
     void GameEngine::playAchivement() {
         printf("game achievement!\n");
-//        char cmd[256];
-//        sprintf(cmd, "play %s/projects/merlin/wav/achievement-00.wav 2> /dev/null &", getenv("HOME"));
-//        system(cmd);
-playWav("achievement-00.wav", true);
+        playWav("achievement-00.wav", true);
     }
 
     void GameEngine::playFailed() {
         printf("player lost!\n");
-        //        char cmd[256];
-        //        sprintf(cmd, "play %s/projects/merlin/wav/youlose.wav 2> /dev/null &", getenv("HOME"));
-        //        system(cmd);
         playWav("youlose.wav", true);
     }
 
@@ -126,28 +121,24 @@ playWav("achievement-00.wav", true);
     }
 
     void GameEngine::playWav(const char* filename, bool background) {
-        char* path = (char*)malloc(512 + strlen(filename));
+        char *path=(char *)malloc(512 + strlen(filename));
         float volume = 1.0;
         sprintf(path, "%s/projects/merlin/wav/%s", getenv("HOME"), filename);
-
-        //        sprintf(cmd, "play %s/projects/merlin/wav/%s 2> /dev/null %s", getenv("HOME"), filename, (background)?"&":"");
-        //        system(cmd);
 
         if (background) {
             thread(playWavFile, path, volume).detach();
         } else {
             playWavFile(path, volume);
         }
-
     }
 
 
-    void* buttonTone(float freq, wavFormat* wavFormat) {
-        playTone(freq, .45, wavFormat);
+    void* buttonTone(float freq, wavFormatType *wavConfig) {
+        playTone(freq, .45, *wavConfig);
     }
 
     void GameEngine::keyTone(int button) {
-        thread(buttonTone, noteHz[button], &wavForamt).detach();
+        thread(buttonTone, noteHz[button], &wavConfig).detach();
     }
 
     void GameEngine::interrupt() {

@@ -178,7 +178,7 @@ bool setup() {
         char name[32];
         sprintf(name, "KEYPAD_%d", i);
         MCP23x17_GPIO button = getEnvMCP23x17_GPIO(name);
-        printf("keypad key=%d config:  port=%c  pin=%d\n", i, mcp23x17_getPort(button) + 'A', mcp23x17_getPin(button));
+        printf("keypad key=%d wavConfig:  port=%c  pin=%d\n", i, mcp23x17_getPort(button) + 'A', mcp23x17_getPin(button));
 
         mcp23x17_setPinInputMode(button, TRUE, keypadButtonActivation);
     }

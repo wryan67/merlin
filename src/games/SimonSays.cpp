@@ -112,7 +112,7 @@ namespace Games {
             }
             setPixelColor(i, keyFlashColor);
             render();
-            playTone(noteHz[i], .333, &wavForamt);
+            playTone(noteHz[i], .333, wavConfig);
             usleep(1000);
             setPixelColor(i, -1);
         }

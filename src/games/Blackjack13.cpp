@@ -74,7 +74,7 @@ namespace Games {
 
         render();
         if (audiable) {
-            playTone(noteHz[card], .333, &wavForamt);
+            playTone(noteHz[card], .333, wavConfig);
         }
 
         return card;

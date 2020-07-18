@@ -1,5 +1,34 @@
 #include "Sound.h"
 
+_snd_pcm_format getFormatFromWav(wavFormatType &wavConfig) {
+
+    switch (wavConfig.bitsPerSample) {
+    case 8:
+    {
+        return SND_PCM_FORMAT_S8;
+        break;
+    }
+    case 16:
+    {
+        return SND_PCM_FORMAT_S16_LE;
+        break;
+    }
+    case 24:
+    {
+        return SND_PCM_FORMAT_S24_3LE;
+        break;
+    }
+    case 32:
+    {
+        return SND_PCM_FORMAT_S32_LE;
+        break;
+    }
+    default:
+        fprintf(stderr, "unknown alsa translation for bits per sample: %d\n", wavConfig.bitsPerSample);
+        return SND_PCM_FORMAT_UNKNOWN;
+    }
+
+}
 
 void playWavFile(char* filename, float volume) {
 
@@ -13,8 +42,60 @@ void playWavFile(char* filename, float volume) {
 }
 
 
+void sendWavConfig(snd_pcm_t* soundCardHandle, wavFormatType &wavConfig) {
+    int err;
+
+    snd_pcm_drop(soundCardHandle);
+
+
+    if (wavConfig.bitsPerSample < 1) {
+        fprintf(stderr, "bits per sample must be greater than zero, found %d\n", wavConfig.bitsPerSample);
+        return;
+    }
+
+    if (wavConfig.audioFormat != 1) {
+        fprintf(stderr, "unknown audio format, expected 1, found %d\n", wavConfig.audioFormat);
+        return;
+
+    }
+
+    _snd_pcm_format sndFormat=getFormatFromWav(wavConfig);
+    _snd_pcm_access accessType = SND_PCM_ACCESS_RW_INTERLEAVED;
+
+    if (sndFormat == SND_PCM_FORMAT_UNKNOWN) {
+        fprintf(stderr, "unknown alsa audio format\n");
+        return;
+    }
+
+    if ((err = snd_pcm_set_params(soundCardHandle,
+        sndFormat,
+        accessType,
+        wavConfig.channels,
+        wavConfig.sampleRate,  // sps
+        1,                     // software resample
+        500000)) < 0)          // latency 0.5sec 
+    {
+        fprintf(stderr, "Playback open error: %s\n", snd_strerror(err));
+        exit(EXIT_FAILURE);
+    }
+}
+
+void printWavConfig(wavFormatType &wavConfig) {
+    int segmetSize = (wavConfig.bitsPerSample / 8) * wavConfig.channels;
+
+    printf("audio format      %d\n", wavConfig.audioFormat);
+    printf("num channels      %d\n", wavConfig.channels);
+    printf("sample rate       %d\n", wavConfig.sampleRate);
+    printf("byte rate         %d\n", wavConfig.byteRate);
+    printf("block align       %d\n", wavConfig.blockAlign);
+    printf("bits per sample   %d\n", wavConfig.bitsPerSample);
+    printf("segment size      %d\n", segmetSize);
+
+}
+
+
 void _playWavFile(snd_pcm_t* soundCardHandle, char* filename, float volume) {
-    printf("Playing %s ...\n"); fflush(stdout);
+    fprintf(stderr,"Playing %s ...\n",filename); fflush(stdout);
 
     int err;
     FILE* wav = fopen(filename, "r");
@@ -24,143 +105,88 @@ void _playWavFile(snd_pcm_t* soundCardHandle, char* filename, float volume) {
         free(filename);
         return;
     }
-    wavFileHeader  wavFileHeader;
-    wavChunkHeader wavChunkHeader;
-    wavFormat      wavFormat;
+    wavFileHeaderType  wavFileHeaderType;
+    wavChunkHeaderType wavChunkHeaderType;
+    wavFormatType      wavConfig;
     
-    int b = fread(&wavFileHeader, sizeof(wavFileHeader), 1, wav);
+    int b = fread(&wavFileHeaderType, sizeof(wavFileHeaderType), 1, wav);
     if (b != 1) {
         fprintf(stderr, "Could not read header from sound file %s\n",filename);
         free(filename);
         return;
     }
 
-    if (strncmp(wavFileHeader.fileType, "RIFF", 4) != 0) {
-        printf("unexpected file descriptor, expected 'RIFF', actual='%4.4s'\n", wavFileHeader.fileType);
+    if (strncmp(wavFileHeaderType.fileType, "RIFF", 4) != 0) {
+        fprintf(stderr,"unexpected file descriptor, expected 'RIFF', actual='%4.4s'\n", wavFileHeaderType.fileType);
         return;
     }
 
-    if (strncmp(wavFileHeader.fileFormat, "WAVE", 4) != 0) {
-        printf("unexpected file type, expected 'RIFF', actual='%4.4s'\n", wavFileHeader.fileFormat);
+    if (strncmp(wavFileHeaderType.fileFormat, "WAVE", 4) != 0) {
+        fprintf(stderr,"unexpected file type, expected 'RIFF', actual='%4.4s'\n", wavFileHeaderType.fileFormat);
         return;
     }
 
 
     while (true) {
-        int b = fread(&wavChunkHeader, sizeof(wavChunkHeader), 1, wav);
+        int b = fread(&wavChunkHeaderType, sizeof(wavChunkHeaderType), 1, wav);
         if (b != 1) {
             fprintf(stderr, "Could not read chunk header from sound file %s\n", filename);
             free(filename);
             return;
         }
-        if (strncmp(wavChunkHeader.chunkID, "data", 4)==0) {
+        if (strncmp(wavChunkHeaderType.chunkID, "data", 4)==0) {
             fprintf(stderr, "error: data chunk found before wav format\n");
             free(filename);
             return;
         }
 
-        if (strncmp(wavChunkHeader.chunkID, "IF", 2) == 0) {
+        if (strncmp(wavChunkHeaderType.chunkID, "IF", 2) == 0) {
             exit(0);
         }
 
-        if (strncmp(wavChunkHeader.chunkID, "fmt ", 4) == 0) {
-            void* wavHeaderChunk = malloc(wavChunkHeader.chunkSize);
-            b = fread(wavHeaderChunk, wavChunkHeader.chunkSize, 1, wav);
+        if (strncmp(wavChunkHeaderType.chunkID, "fmt ", 4) == 0) {
+            void* wavHeaderChunk = malloc(wavChunkHeaderType.chunkSize);
+            b = fread(wavHeaderChunk, wavChunkHeaderType.chunkSize, 1, wav);
             if (b != 1) {
                 fprintf(stderr, "Could not read wave header from sound file %s\n", filename);
                 free(filename);
                 return;
             }
-            memcpy(&wavFormat, wavHeaderChunk, sizeof(wavFormat));
+            memcpy(&wavConfig, wavHeaderChunk, sizeof(wavConfig));
             free(wavHeaderChunk);
             break;
         } else {
-            fseek(wav, wavChunkHeader.chunkSize, SEEK_CUR);
+            fseek(wav, wavChunkHeaderType.chunkSize, SEEK_CUR);
         }
     }
 
 
-    int segmetSize = (wavFormat.bitsPerSample / 8) * wavFormat.channels;
+    int segmetSize = (wavConfig.bitsPerSample / 8) * wavConfig.channels;
 
 
     if (debug) {
-        printf("Playing %s...\n");
-        printf("volume            %f\n", volume);
-        printf("audio format      %d\n", wavFormat.audioFormat);
-        printf("num channels      %d\n", wavFormat.channels);
-        printf("sample rate       %d\n", wavFormat.sampleRate);
-        printf("byte rate         %d\n", wavFormat.byteRate);
-        printf("block align       %d\n", wavFormat.blockAlign);
-        printf("bits per sample   %d\n", wavFormat.bitsPerSample);
-        printf("segment size      %d\n", segmetSize);
+        printWavConfig(wavConfig);
     }
 
-    
-    if (wavFormat.bitsPerSample<1) {
-        printf("bits per sample must be greater than zero, found %d\n", wavFormat.bitsPerSample);
-        return;
-    }
+    sendWavConfig(soundCardHandle, wavConfig);
 
-    if (wavFormat.audioFormat != 1) {
-        printf("unknown audio format, expected 1, found %d\n", wavFormat.audioFormat);
-        return;
-    
-    }
-
-    _snd_pcm_format sndFormat;
-
-    switch (wavFormat.bitsPerSample) {
-        case 16: {
-            sndFormat = SND_PCM_FORMAT_S16_LE;
-            break;
-        }
-        case 24:
-        {
-            sndFormat = SND_PCM_FORMAT_S24_3LE;
-            break;
-        }
-        case 32:
-        {
-            sndFormat = SND_PCM_FORMAT_S32_LE;
-            break;
-        }
-        default:
-            fprintf(stderr,"unknown alsa translation for bits per sample: %d\n", wavFormat.bitsPerSample);
-            return;
-    }
-
-    _snd_pcm_access accessType = SND_PCM_ACCESS_RW_INTERLEAVED;
-
-
-    if ((err = snd_pcm_set_params(soundCardHandle,
-        sndFormat,
-        accessType,
-        wavFormat.channels,    
-        wavFormat.sampleRate,  // sps
-        1,                     // software resample
-        500000)) < 0)          // latency 0.5sec 
-    {
-        printf("Playback open error: %s\n", snd_strerror(err));
-        exit(EXIT_FAILURE);
-    }
-    
 
     void* data = NULL;
 
     while (true) {
 
-        long rs = fread(&wavChunkHeader, sizeof(wavChunkHeader), 1, wav);
+        long rs = fread(&wavChunkHeaderType, sizeof(wavChunkHeaderType), 1, wav);
 
         if (rs != 1) {
             break;
         }
 
-        if (strncmp(wavChunkHeader.chunkID, "data", 4) != 0) {
-            fseek(wav, wavChunkHeader.chunkSize, SEEK_CUR);
+        if (strncmp(wavChunkHeaderType.chunkID, "data", 4) != 0) {
+            fseek(wav, wavChunkHeaderType.chunkSize, SEEK_CUR);
             continue;
         }
 
-        long dataSize = wavChunkHeader.chunkSize;
+        long dataSize = wavChunkHeaderType.chunkSize;
         data = realloc(data, dataSize);
 
         rs = fread(data, dataSize, 1, wav);

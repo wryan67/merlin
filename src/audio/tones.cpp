@@ -1,119 +1,80 @@
 #include "Sound.h"
+#include "Common.h"
 
-void generate_sine(unsigned char* data, snd_pcm_format_t format,
-    wavFormat* wavForamt, snd_pcm_uframes_t offset,
-    int count, double* _phase, float freq) {
+void generate_sine(unsigned char* data, wavFormatType &wavConfig, int samples, double &phase, float freq) {
+    static double max_phase = 2.0 * M_PI;
+    double step = max_phase * freq / wavConfig.sampleRate;
+    
+    unsigned int maxVolume = (1 << (wavConfig.bitsPerSample - 1)) - 1;  
 
-    static double max_phase = 2. * M_PI;
-    double phase = *_phase;
-    double step = max_phase * freq / (double)wavForamt->sampleRate;
-    int format_bits = snd_pcm_format_width(format);
-    unsigned int maxval = (1 << (format_bits - 1)) - 1;
-    int bps = format_bits / 8;  /* bytes per sample */
-    int phys_bps = snd_pcm_format_physical_width(format) / 8;
-    int big_endian = snd_pcm_format_big_endian(format) == 1;
-    int to_unsigned = snd_pcm_format_unsigned(format) == 1;
-    int is_float = (format == SND_PCM_FORMAT_FLOAT_LE ||
-        format == SND_PCM_FORMAT_FLOAT_BE);
+    int bps = wavConfig.bitsPerSample / 8;  /* bytes per sample */
 
-    for (int k = 0; k < count; ++k) {
-        union {
-            float f;
-            int i;
-        } fval;
-        int res, i;
-        if (is_float) {
-            fval.f = sin(phase);
-            res = fval.i;
-        }
-        else {
-            res = sin(phase) * maxval;
-        }
-        if (to_unsigned)
-            res ^= 1U << (format_bits - 1);
-        for (int chn = 0; chn < wavForamt->channels; chn++) {
-            long wavIndex = k * wavForamt->bitsPerSample / 8 + chn * wavForamt->bitsPerSample / 8;
-            /* Generate data in native endian format */
-            if (!big_endian) {
-                for (i = 0; i < bps; i++)
-                    *(data + k + phys_bps - 1 - i) = (res >> i * 8) & 0xff;
-            }
-            else {
-                for (i = 0; i < bps; i++)
-                    *(data + k + i) = (res >> i * 8) & 0xff;
+    long wavIndex = 0;
+    for (long sample = 0; sample < samples; ++sample) {
+        int res = sin(phase) * maxVolume;
+
+        for (int channel = 0; channel < wavConfig.channels; channel++) {
+            wavIndex = sample * wavConfig.blockAlign + channel * wavConfig.blockAlign;
+
+            /* Generate data in little endian format */
+            for (int i = 0; i < bps; i++) {
+                *(data + sample + wavConfig.blockAlign - 1 - i) = (res >> i * 8) & 0xff;
             }
         }
         phase += step;
-        if (phase >= max_phase)
+        if (phase >= max_phase) {
             phase -= max_phase;
+        }
     }
-    *_phase = phase;
+
 }
 
 
-void sendToneHeader(snd_pcm_t* soundCardHandle, wavFormat* wavForamt) {
-    int err;
 
-    snd_pcm_drop(soundCardHandle);
 
-    if ((err = snd_pcm_set_params(soundCardHandle,
-        SND_PCM_FORMAT_S16_LE,
-        SND_PCM_ACCESS_RW_INTERLEAVED,
-        1,  // channels
-        wavForamt->sampleRate,  // sps
-        0,  // software resample
-        500000)) < 0) {   /* latency 0.5sec */
-
-        fprintf(stderr, "Playback open error: %s\n", snd_strerror(err));
-        exit(EXIT_FAILURE);
-    }
-}
-
-void playTone(float freq, float duration, wavFormat* wavForamt) {
+void playTone(float freq, float duration, wavFormatType &wavConfig) {
     snd_pcm_t* handle = getSoundCardHandle();
     if (handle == NULL) {
         fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
         return;
     }
-    _playTone(handle, freq, duration, wavForamt);
+    sendWavConfig(handle, wavConfig);
+    double phase = 0;
+    _playTone(handle, freq, duration, wavConfig, phase);
     closeSoundCard(handle);
 }
 
 
-void _playTone(snd_pcm_t* soundCardHandle, float freq, float duration, wavFormat* wavForamt) {
-    long dataSize = wavForamt->blockAlign * wavForamt->sampleRate * duration;
+void _playTone(snd_pcm_t* soundCardHandle, float freq, double duration, wavFormatType &wavConfig, double &phase) {
 
-    void* data = malloc(dataSize);
-    memset(data, 0, dataSize);
+    long samples  = (wavConfig.sampleRate * duration) + 0.5;
+    long dataSize = samples * wavConfig.blockAlign * wavConfig.channels;
+    long frames = dataSize / (wavConfig.bitsPerSample * wavConfig.channels / 8);
 
-    wavChunkHeader wavChunkHeader;
-    strncpy(wavChunkHeader.chunkID, "data", 4);
-    wavChunkHeader.chunkSize = dataSize;
+//    printWavConfig(wavConfig);
+//    printf("duration=%lf \nsamples=%ld  \ndataSize=%ld  \nframes=%ld\n", 
+//            duration,      samples,      dataSize,        frames); 
+//    fflush(stdout);
 
+    void* data = malloc(dataSize * 5);
+    memset(data, 0, dataSize * 5);
 
-    long samples = wavForamt->sampleRate * duration;
-    snd_pcm_format_t format = SND_PCM_FORMAT_S16_LE;
-    double phase = 1.0;
     if (freq > 0) {
-        generate_sine((unsigned char*)data, format, wavForamt, 0, samples, &phase, freq);
+        generate_sine((unsigned char*)data, wavConfig, samples+samples, phase, freq);
     }
 
-    sendToneHeader(soundCardHandle, wavForamt);
+    snd_pcm_sframes_t framesWritten;
+    framesWritten = snd_pcm_writei(soundCardHandle, data, frames);
 
-    int segmetSize = (wavForamt->bitsPerSample / 8) * wavForamt->channels;
-
-    snd_pcm_sframes_t bytesWritten;
-    bytesWritten = snd_pcm_writei(soundCardHandle, data, dataSize / segmetSize);
-
-    if (bytesWritten < 0) {
-        fprintf(stderr, "snd_pcm_writei failed: %s\n", snd_strerror(bytesWritten));
+    if (framesWritten < 0) {
+        fprintf(stderr, "snd_pcm_writei failed: %s\n", snd_strerror(framesWritten));
         exit(EXIT_FAILURE);
     }
 
-    if (bytesWritten > 0 && bytesWritten < dataSize / segmetSize) {
-        fprintf(stderr, "data write error (expected %li, wrote %li)\n", dataSize, bytesWritten);
+    if (framesWritten > 0 && framesWritten < samples) {
+        fprintf(stderr, "data write error (expected %ld, wrote %ld)\n", dataSize, (long)framesWritten);
     }
+
     free(data);
 }
-
 

@@ -51,6 +51,8 @@ namespace Games {
             fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
             return;
         }
+        sendWavConfig(handle, wavConfig);
+        double phase = 1.0;
 
         clearBoard();
         for (int i : song) {
@@ -62,9 +64,9 @@ namespace Games {
             }
             setPixelColor(i, keyFlashColor);
             render();
-            _playTone(handle, noteHz[i], .333, &wavForamt);
-            drainSound(handle);
-            usleep(1000);
+            _playTone(handle, noteHz[i], .450, wavConfig, phase);
+            //drainSound(handle);
+           // usleep(1000);
             setPixelColor(i, -1);
             render();
         }

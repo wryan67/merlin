@@ -16,12 +16,12 @@ using namespace std;
 
 namespace Games {
     // global
-    void* buttonTone(float freq, wavFormat* wavForamt);
+    void* buttonTone(float freq, wavFormatType *wavConfig);
 
     class GameEngine {
     protected:
         bool interruptFlag;
-        wavFormat wavForamt;
+        wavFormatType wavConfig;
         int sampleRate = 48000;
         static bool screenReader;
 
