@@ -56,16 +56,8 @@ namespace Games {
     }
 
 
-
-    /*
-    bool GameEngine::vectorContains(vector<int>& haystack, int needle) {
-        return (std::find(haystack.begin(), haystack.end(), needle) != haystack.end());
-    }
-    */
-
     void GameEngine::announceGame() {
         clearBoard();
-        fprintf(stderr, "announce game %s\n", gameName); fflush(stderr);
         playWav(gameWav, !screenReader);
     }
 
@@ -134,7 +126,7 @@ namespace Games {
 
 
     void* buttonTone(float freq, wavFormatType *wavConfig) {
-        playTone(freq, .45, *wavConfig);
+        playTone(freq, .25, *wavConfig);
     }
 
     void GameEngine::keyTone(int button) {

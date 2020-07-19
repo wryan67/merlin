@@ -90,7 +90,7 @@ namespace Games {
 
         if (isPlaying) {
             interruptFlag = true;
-            usleep(333 * 1000);
+            usleep(410 * 1000);
             interruptFlag = false;
             isActive = true;
             isPlaying = false;
@@ -112,8 +112,8 @@ namespace Games {
             }
             setPixelColor(i, keyFlashColor);
             render();
-            playTone(noteHz[i], .333, wavConfig);
-            usleep(1000);
+            playTone(noteHz[i], .310, wavConfig);
+            usleep(100 * 1000);
             setPixelColor(i, -1);
         }
 

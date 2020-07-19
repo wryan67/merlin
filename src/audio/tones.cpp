@@ -1,18 +1,10 @@
 #include "Sound.h"
-#include "Common.h"1
+#include "Common.h"
 
-/*                                                   seconds                        Hz         */
 void *generate_sine(wavFormatType& wavConfig, double duration, double& phase, float freq) {
 
     long samples = (wavConfig.sampleRate * duration) + 0.5;
     long dataSize = samples * wavConfig.blockAlign * wavConfig.channels;
-
-/*
-    printWavConfig(wavConfig);
-    printf("duration=%lf \nsamples=%ld  \ndataSize=%ld\n", 
-             duration,      samples,      dataSize); 
-    fflush(stdout);
-*/    
 
     if (wavConfig.bitsPerSample != 16) {
         fprintf(stderr, "generate_sine expects 16 bit sample size\n"); fflush(stderr);
@@ -32,13 +24,13 @@ void *generate_sine(wavFormatType& wavConfig, double duration, double& phase, fl
 
 
 
-        int16_t y = (sin(phase)<0?-1:1) * maxVolume;
+        int16_t amplitude = (sin(phase)<0?-1:1) * maxVolume;
 
         for (int channel = 0; channel < wavConfig.channels; channel++) {
             
             wavIndex = (sample * wavConfig.blockAlign * wavConfig.channels) + (channel * wavConfig.blockAlign);
 
-            memcpy(&data[wavIndex], &y, sizeof(int16_t));
+            memcpy(&data[wavIndex], &amplitude, sizeof(int16_t));
 
 
            /* Generate signed data in little endian format */
@@ -46,7 +38,7 @@ void *generate_sine(wavFormatType& wavConfig, double duration, double& phase, fl
             for (int i = 0; i < wavConfig.blockAlign; i++) {
                 //int offset = wavConfig.blockAlign - 1 - i;
                 int offset = 0;
-               *(data + sample + channel + offset) = (y >> i * 8) & 0xff;
+               *(data + sample + channel + offset) = (amplitude >> i * 8) & 0xff;
             }
             */
         }
