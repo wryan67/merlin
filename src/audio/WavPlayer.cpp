@@ -49,7 +49,12 @@ void sendWavConfig(snd_pcm_t* soundCardHandle, wavFormatType &wavConfig) {
 
 
     if (wavConfig.bitsPerSample < 1) {
-        fprintf(stderr, "bits per sample must be greater than zero, found %d\n", wavConfig.bitsPerSample);
+        fprintf(stderr, "bits per sample must be greater than zero, bitsPerSample=%d\n", wavConfig.bitsPerSample);
+        return;
+    }
+
+    if (wavConfig.bitsPerSample%8 != 00) {
+        fprintf(stderr, "bits per sample must be a multiple of 8, bitsPerSample=%d\n", wavConfig.bitsPerSample);
         return;
     }
 
@@ -73,7 +78,7 @@ void sendWavConfig(snd_pcm_t* soundCardHandle, wavFormatType &wavConfig) {
         wavConfig.channels,
         wavConfig.sampleRate,  // sps
         1,                     // software resample
-        500000)) < 0)          // latency 0.5sec 
+        1000000)) < 0)         // latency 1 sec 
     {
         fprintf(stderr, "Playback open error: %s\n", snd_strerror(err));
         exit(EXIT_FAILURE);

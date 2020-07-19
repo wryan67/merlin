@@ -86,7 +86,7 @@ namespace Games {
 
     void GameEngine::initWavFormat() {
         wavConfig.audioFormat = 1;
-        wavConfig.channels = 1;
+        wavConfig.channels = 2;
         wavConfig.sampleRate = sampleRate;
         wavConfig.bitsPerSample = 16;
         wavConfig.blockAlign = wavConfig.bitsPerSample / 8;

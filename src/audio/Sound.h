@@ -38,7 +38,7 @@ struct wavFormatType
 // Auto managed using AUDIODEV enviornment variable
 void drainSound(snd_pcm_t* soundCardHandle);
 void playWavFile(char* filename, float volume);
-void playTone(float freq, float duration, wavFormatType &wavConfig);
+void playTone(float freq, double duration, wavFormatType &wavConfig);
 void printWavConfig(wavFormatType& wavConfig);
 
 
@@ -56,5 +56,5 @@ _snd_pcm_format getFormatFromWav(wavFormatType &wavConfig);
 
 
 // use at your own risk
-void generate_sine(unsigned char* data, wavFormatType& wavConfig, int samples, double& phase, float freq);
+void *generate_sine(wavFormatType& wavConfig, double duration, double& phase, float freq);
 

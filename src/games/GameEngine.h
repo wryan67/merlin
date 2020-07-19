@@ -36,18 +36,21 @@ namespace Games {
 
         snd_pcm_t* keypadSoundHandle[MERLIN_LIGHTS];
 
+
+        // https://en.wikipedia.org/wiki/Piano_key_frequencies
+
         float noteHz[maxNotes] = {
           0,        // rest
           195.9977, // 1  G3
-          261.6256, // 3  C4
-          293.6648, // 4  D4
-          329.6276, // 5  E4
-          349.2282, // 6  F4
-          391.9954, // 7  G4
-          440.0000, // 8  A4
-          493.8833, // 9  B4
-          523.2511, // 10 C5
-          587.3295, // 11 D5
+          261.6256, // 2  C4
+          293.6648, // 3  D4
+          329.6276, // 4  E4
+          349.2282, // 5  F4
+          391.9954, // 6  G4
+          440.0000, // 7  A4
+          493.8833, // 8  B4
+          523.2511, // 9  C5
+          587.3295, // 10 D5
         };
 
         GameEngine();
