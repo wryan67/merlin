@@ -21,8 +21,8 @@ namespace Games {
         isActive = true;
     }
 
-    void Echo::printState(snd_pcm_t* handle) {
-        const char *msg;
+    void Echo::printState(snd_pcm_t* handle, const char* description) {
+        const char* msg;
 
         snd_pcm_state_t state = snd_pcm_state(handle);
         switch (state) {
@@ -38,7 +38,7 @@ namespace Games {
         default:
             msg = "unknown";
         }
-        printf("sound card state: %s\n", msg);
+        printf("sound card state @%s: %s\n", description, msg);
     }
 
     void Echo::keypadButtonReleased(int button, long long elapsed) {
@@ -72,7 +72,7 @@ namespace Games {
             fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
             return;
         }
-        int err=snd_pcm_nonblock(handle, SND_PCM_BLOCK);
+        int err=snd_pcm_nonblock(handle, SND_PCM_BLOCK);  // this is the default mode
         if (err != 0) {
             fprintf(stderr, "unable to set blocking mode on sound card\n"); fflush(stdout);
         }
@@ -87,14 +87,15 @@ namespace Games {
                 closeSoundCard(handle);
                 return;
             }
+
             _playTone(handle, noteHz[i], .310, wavConfig, phase);
             setPixelColor(i, keyFlashColor);    render();
+            delay(200);
 
             _playTone(handle, 0,         .100, wavConfig, phase);
             setPixelColor(i, -1);   render();
         }
 
-        drainSound(handle);
         closeSoundCard(handle);
 
         render();
