@@ -11,7 +11,7 @@ namespace Games {
         void keypadButtonReleased(int button, long long elapsed);
         void computerTurn();
         void restartGame();
-
+        void printState(snd_pcm_t* handle);
     public:
         Echo();
         

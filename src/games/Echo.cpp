@@ -1,4 +1,5 @@
 #include "Echo.h"
+#define SND_PCM_BLOCK 0
 
 namespace Games {
     Echo::Echo() {
@@ -18,6 +19,26 @@ namespace Games {
         clearBoard();
         song.clear();
         isActive = true;
+    }
+
+    void Echo::printState(snd_pcm_t* handle) {
+        const char *msg;
+
+        snd_pcm_state_t state = snd_pcm_state(handle);
+        switch (state) {
+        case SND_PCM_STATE_OPEN:            msg = "SND_PCM_STATE_OPEN"; break;
+        case SND_PCM_STATE_SETUP:           msg = "SND_PCM_STATE_SETUP"; break;
+        case SND_PCM_STATE_PREPARED:        msg = "SND_PCM_STATE_PREPARED"; break;
+        case SND_PCM_STATE_RUNNING:         msg = "SND_PCM_STATE_RUNNING"; break;
+        case SND_PCM_STATE_XRUN:            msg = "SND_PCM_STATE_XRUN"; break;
+        case SND_PCM_STATE_DRAINING:        msg = "SND_PCM_STATE_DRAINING"; break;
+        case SND_PCM_STATE_PAUSED:          msg = "SND_PCM_STATE_PAUSED"; break;
+        case SND_PCM_STATE_SUSPENDED:       msg = "SND_PCM_STATE_SUSPENDED"; break;
+        case SND_PCM_STATE_DISCONNECTED:    msg = "SND_PCM_STATE_DISCONNECTED"; break;
+        default:
+            msg = "unknown";
+        }
+        printf("sound card state: %s\n", msg);
     }
 
     void Echo::keypadButtonReleased(int button, long long elapsed) {
@@ -51,6 +72,10 @@ namespace Games {
             fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
             return;
         }
+        int err=snd_pcm_nonblock(handle, SND_PCM_NONBLOCK);
+        if (err != 0) {
+            fprintf(stderr, "unable to set blocking mode on sound card\n"); fflush(stdout);
+        }
         sendWavConfig(handle, wavConfig);
         double phase = 1.0;
 
@@ -62,13 +87,14 @@ namespace Games {
                 closeSoundCard(handle);
                 return;
             }
-            setPixelColor(i, keyFlashColor);
-            render();
             _playTone(handle, noteHz[i], .310, wavConfig, phase);
+            setPixelColor(i, keyFlashColor);    render();
+
             _playTone(handle, 0,         .100, wavConfig, phase);
-            setPixelColor(i, -1);
-            render();
+            setPixelColor(i, -1);   render();
         }
+
+        drainSound(handle);
         closeSoundCard(handle);
 
         render();
