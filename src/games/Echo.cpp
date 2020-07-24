@@ -72,7 +72,7 @@ namespace Games {
             fprintf(stderr, "soundCardHandle is null\n"); fflush(stderr);
             return;
         }
-        int err=snd_pcm_nonblock(handle, SND_PCM_NONBLOCK);
+        int err=snd_pcm_nonblock(handle, SND_PCM_BLOCK);
         if (err != 0) {
             fprintf(stderr, "unable to set blocking mode on sound card\n"); fflush(stdout);
         }
